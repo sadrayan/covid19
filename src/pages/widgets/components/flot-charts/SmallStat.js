@@ -3,51 +3,15 @@ import { Row, Col } from 'reactstrap';
 import HighchartsReact from 'highcharts-react-official'
 
 import Widget from '../../../../components/Widget/Widget';
+import s from '../changes-chart/ChangesChart.module.scss';
 
-class SmallStat extends  React.Component {
+
+class SmallStat extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {  };
-    
-  }
+    this.state = {};
 
-  generateRandomData = (labels) => {
-    function random() {
-      return (Math.floor(Math.random() * 30)) + 10;
-    }
-
-    const data = [];
-    let maxValueIndex = 5;
-
-    for (let i = 0; i < labels.length; i += 1) {
-      const randomSeries = [];
-      for (let j = 0; j < 25; j += 1) {
-        randomSeries.push([j, Math.floor(maxValueIndex * j) + random()]);
-      }
-      maxValueIndex -= 1;
-      data.push({
-        data: randomSeries,
-        name: 'Light Blue',
-        color: 'rgba(244,87,34,1)',
-        fillColor: {
-          linearGradient: {
-            x1: 0,
-            x2: 0,
-            y1: 0,
-            y2: 1
-          },
-          stops: [
-            [0, 'rgba(244,87,34,.8)'],
-            [1, 'rgba(244,87,34, 0)']
-          ]
-        },
-        type: 'areaspline',
-        fillOpacity: 1,
-        lineWidth: 2
-      });
-    }
-    return data;
   }
 
   render() {
@@ -57,7 +21,7 @@ class SmallStat extends  React.Component {
       },
       title: false,
       chart: {
-        height: 120,
+        height: 80,
         margin: 0,
         backgroundColor: 'rgba(0,0,0,0)'
       },
@@ -93,18 +57,42 @@ class SmallStat extends  React.Component {
       }
     };
 
-    let { title } = this.props;
+    let { title, percentage, increase, data } = this.props;
+
+    title = <Row>
+      <Col xs={4}> <h5> {title} 13323</h5>
+        <div className="d-flex align-items-start h3">
+          <h6>{percentage}%</h6>
+          <i className={`la la-arrow-right ml-sm text-${increase ? 'success' : 'danger'} 
+          rotate-${increase ? '315' : '45'}`} />
+        </div>
+      </Col>
+    </Row>
 
     return (
-      <>
+      < >
+        <Widget title={title} className="p-0" style={{ marginBottom: '10px' }}>
 
-        <Widget title={<Row> <Col xs={4}> <h6> {title} </h6> </Col> </Row>}  className="p-0 ">
-            <HighchartsReact options={{
-              ...options,
-              series: this.generateRandomData([{ name: 'Visitors', color: '#1870DC' }])
-            }} />
+          <HighchartsReact options={{
+            ...options,
+            series: data
+          }} />
         </Widget>
 
+{/* 
+        <Widget className="widget-chart-changes p-0" >
+
+          <div className={s.changesChart}>
+            <div className={`${s.chart} `}>
+              <p className={s.chartValue}><i className="fa fa-caret-up" /> 352.79</p>
+              <p className={s.chartValueChange}>+2.04 (1.69%)</p>
+              <HighchartsReact options={{
+            ...options,
+            series: data
+          }} />
+            </div>
+          </div>
+        </Widget> */}
       </>
     );
   }

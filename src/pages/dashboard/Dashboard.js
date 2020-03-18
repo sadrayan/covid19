@@ -4,7 +4,7 @@ import Select from 'react-select';
 import Widget from '../../components/Widget';
 
 import Map from './components/am4chartMap/am4chartMap';
-import { getLatestData, getCountryList } from './DataProcess'
+import { getLatestData, getCountryList, generateData } from './DataProcess'
 import SmallStat from '../widgets/components/flot-charts/SmallStat';
 
 import s from './Dashboard.module.scss';
@@ -16,13 +16,14 @@ class Dashboard extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectCountryData: [],
+      selectCountryData: [{ value: 'All', label: 'All' }],
     };
   }
 
   async componentDidMount() {
     let caseDataPoints = await getLatestData()
     let selectCountryData = getCountryList(caseDataPoints)
+    let data = generateData(caseDataPoints)
     this.setState({ caseDataPoints: caseDataPoints, selectCountryData: selectCountryData })
   }
 
@@ -55,14 +56,19 @@ class Dashboard extends React.Component {
                   classNamePrefix="react-select"
                   className="selectCustomization"
                   options={this.state.selectCountryData}
-                  defaultValue={this.state.selectCountryData[1]}
+                  defaultValue={this.state.selectCountryData[0]}
                 />
               </Col>
             </FormGroup>
 
-            <SmallStat title="Confirmed" />
-            <SmallStat title="Recovered" />
-            <SmallStat title="Death" />
+            {generateData(this.state.caseDataPoints).map((stats, idx) => (
+              <SmallStat key={idx}
+                title={stats['name']}
+                data={[stats]}
+                percentage={stats.percentage}
+                increase={stats.increase} />
+            ))}
+
           </Col>
         </Row>
 
