@@ -58,9 +58,10 @@ class SmallStat extends React.Component {
     };
 
     let { title, percentage, increase, data } = this.props;
-
+    console.log('data.data', data[0]['data'])
+    var total = data[0]['data'] ? data[0]['data'][data[0]['data'].length -1][1] : 0
     title = <Row>
-      <Col xs={4}> <h5> {title} 13323</h5>
+      <Col xs={4}> <h5> {title} {total}</h5>
         <div className="d-flex align-items-start h3">
           <h6>{percentage}%</h6>
           <i className={`la la-arrow-right ml-sm text-${increase ? 'success' : 'danger'} 
@@ -70,29 +71,13 @@ class SmallStat extends React.Component {
     </Row>
 
     return (
-      < >
+      <>
         <Widget title={title} className="p-0" style={{ marginBottom: '10px' }}>
-
           <HighchartsReact options={{
             ...options,
             series: data
           }} />
         </Widget>
-
-{/* 
-        <Widget className="widget-chart-changes p-0" >
-
-          <div className={s.changesChart}>
-            <div className={`${s.chart} `}>
-              <p className={s.chartValue}><i className="fa fa-caret-up" /> 352.79</p>
-              <p className={s.chartValueChange}>+2.04 (1.69%)</p>
-              <HighchartsReact options={{
-            ...options,
-            series: data
-          }} />
-            </div>
-          </div>
-        </Widget> */}
       </>
     );
   }
