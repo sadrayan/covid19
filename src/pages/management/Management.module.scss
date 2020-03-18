@@ -1,0 +1,50 @@
+@import '../../styles/app';
+
+:global {
+  .react-bootstrap-table-page-btns-ul {
+    .page-link {
+      border: 1px solid $subtle-blue!important;  
+      background-color: transparent;
+      &:hover {
+
+      }   
+    }
+  }
+}
+
+.bootstrapTable {
+  border: none;
+
+  :global .table {
+    thead,
+    tbody {
+      th,
+      td {
+        border-right: none;
+        border-left: none;
+      }
+    }
+
+    thead th {
+      background: transparent;
+    }
+
+    tbody td {
+      vertical-align: middle;
+    }
+  }
+}
+
+.image {
+  width: 100px;
+}
+
+.promoAlert {
+  transition: 0.6s;
+  transition-timing-function: ease;
+  transform: translateX(-130vw);
+}
+
+.showAlert {
+  transform: translateX(0);
+}

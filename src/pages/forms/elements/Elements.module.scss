@@ -1,0 +1,426 @@
+@import '../../../styles/app';
+
+:global {
+  @import '../../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg';
+  @import '../../../../node_modules/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox';
+  @import '../../../../node_modules/react-datetime/css/react-datetime';
+  @import '../../../../node_modules/rc-color-picker/dist/rc-color-picker';
+  @import '../../../../node_modules/jasny-bootstrap/dist/css/jasny-bootstrap';
+  @import '../../../../node_modules/react-mde/lib/styles/scss/react-mde-all';
+}
+
+.autogrow {
+  overflow: hidden;
+  resize: none;
+}
+
+.wysiwygWrapper {
+  border: 1px solid $bg-custom-dark !important;
+  overflow: visible;
+  height: 270px;
+}
+
+.wysiwygToolbar {
+  color: $gray-800 !important;
+  background-color: $subtle-blue !important;
+  border-color: transparent !important;
+
+  :global {
+    .rdw-dropdown-optionwrapper {
+      background: $bg-custom-dark;
+      border: 1px solid $bg-custom-dark;
+    }
+    .rdw-dropdown-optionwrapper-highlighted {
+      background: $bg-custom-dark!important;
+      border: 1px solid $bg-custom-dark;
+    }
+    .rdw-dropdownoption-highlighted {
+      background: $subtle-blue;
+    }
+    .rdw-dropdownoption-active {
+      background: $subtle-blue;
+    }
+    .rdw-dropdown-optionwrapper:hover {
+      background: $bg-custom-dark;
+    }
+    .rdw-option-wrapper {
+      font-family: 'Open Sans', sans-serif;
+      font-size: 14px;
+      height: 30px;
+      min-width: 30px;
+      margin: 0 3px 0 0;
+      background: $subtle-blue;
+      color: $content-color;
+      box-shadow: none;
+      border: 1px solid $bg-custom-dark;
+      &:hover, &:focus {
+        box-shadow: none;
+      }
+    }
+
+    .rdw-dropdown-wrapper {
+      background: $subtle-blue;
+      color: $content-color;
+      border: 1px solid $bg-custom-dark;
+      &:hover, &:focus {
+        background: $subtle-blue;
+        color: $content-color;
+        box-shadow: none;
+      }
+    }
+  }
+}
+
+.wysiwygEditor {
+  position: relative !important;
+  overflow: hidden !important;
+  height: 150px;
+  line-height: 0.1;
+  padding: 0 1rem;
+}
+
+.root {
+  :global {
+    /*
+     * Switchery.
+     */
+
+    .abc-checkbox,
+    .abc-radio {
+      .form-check-input {
+        position: relative;
+        margin: 0;
+      }
+    }
+
+    .display-inline-block {
+      display: inline-block;
+    }
+
+    .display-none {
+      display: none;
+    }
+
+    .switch {
+      box-sizing: content-box;
+    }
+
+    .switch input {
+      display: none;
+    }
+
+    .switch i {
+      display: inline-block;
+      cursor: pointer;
+      padding-right: 20px;
+      transition: all ease 0.2s;
+      -webkit-transition: all ease 0.2s;
+      border-radius: 20px;
+      box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.5);
+    }
+
+    .switch i::before {
+      display: block;
+      content: '';
+      width: 30px;
+      height: 30px;
+      padding: 1px;
+      border-radius: 20px;
+      background: white;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    .switch :checked + i {
+      padding-right: 0;
+      padding-left: 20px;
+      background: rgb(100, 189, 99);
+    }
+
+    /* Datepicker */
+
+    .datepicker {
+      .input-group-addon {
+        display: inline-block;
+        position: relative;
+        top: -2px;
+        left: -2px;
+      }
+
+      i.glyphicon {
+        vertical-align: top;
+      }
+
+      .rdt {
+        display: inline-block;
+      }
+    }
+
+    /*  file input */
+
+    .fileinput.fileinput-new {
+      .thumbnail {
+        padding: $thumbnail-padding;
+        line-height: $line-height-base;
+        background-color: $thumbnail-bg;
+        border: $thumbnail-border-width solid $thumbnail-border-color;
+        border-radius: $thumbnail-border-radius;
+        transition: all 0.2s ease-in-out;
+
+        @include box-shadow(0 1px 2px rgba(0, 0, 0, 0.075));
+      }
+
+      &.fileinput-fix {
+        width: 200px;
+        height: 150px;
+      }
+    }
+
+    .btn {
+      label {
+        margin-bottom: 0;
+      }
+    }
+
+    .fileinput-preview.fileinput-exists {
+      border: 1px solid $input-border-color;
+      border-radius: $border-radius;
+      padding: 5px;
+    }
+
+    .fileinput.input-group {
+      display: flex;
+    }
+
+    .fileinput-new.input-group .btn-file,
+    .fileinput-new .input-group .btn-file {
+      border-radius: 0 $border-radius $border-radius 0;
+
+      &.btn-xs,
+      &.btn-sm {
+        border-radius: 0 $border-radius-sm $border-radius-sm 0;
+      }
+
+      &.btn-lg {
+        border-radius: 0 $border-radius-lg $border-radius-lg 0;
+      }
+    }
+
+    .form-group.has-warning .fileinput {
+      .fileinput-preview {
+        color: #fff;
+      }
+
+      .thumbnail {
+        border-color: theme-color('warning');
+      }
+    }
+
+    .form-group.has-error .fileinput {
+      .fileinput-preview {
+        color: #fff;
+      }
+
+      .thumbnail {
+        border-color: theme-color('danger');
+      }
+    }
+
+    .form-group.has-success .fileinput {
+      .fileinput-preview {
+        color: #fff;
+      }
+
+      .thumbnail {
+        border-color: theme-color('success');
+      }
+    }
+
+    .btn-label {
+      background: transparent;
+      left: 2px;
+      padding: 1px 6px;
+    }
+
+    // Opposite alignment of blockquote
+    .blockquote {
+      padding: ($spacer / 2) $spacer;
+      margin-bottom: $spacer;
+      font-size: $blockquote-font-size;
+      border-left: 0.25rem solid $green;
+    }
+
+    .blockquote footer {
+      display: block;
+      font-size: 80%; // back to default font-size
+      color: $blockquote-small-color;
+
+      &::before {
+        content: '\2014 \00A0'; // em dash, nbsp
+      }
+    }
+
+    .blockquote-reverse {
+      padding-right: $spacer;
+      padding-left: 0;
+      text-align: right;
+      border-right: 0.25rem solid $green;
+      border-left: 0;
+    }
+
+    .blockquote-reverse footer {
+      &::before {
+        content: '';
+      }
+
+      &::after {
+        content: '\00A0 \2014'; // nbsp, em dash
+      }
+    }
+  }
+}
+
+.dropzone {
+  width: 100%;
+  text-align: center;
+  padding: 40px 10px;
+  height: 200px;
+  border: 2px dashed #ccc;
+
+  @include border-radius($border-radius);
+
+  img {
+    max-height: 100px;
+    max-width: 150px;
+    border-radius: 5px;
+  }
+}
+
+/* rc-slider customization */
+
+.sliderCustomization.verticalSlider {
+  height: 165px!important;
+  display: inline-block;
+  :global {
+    .rc-slider-handle {
+      margin-left: -11px!important;
+    }    
+  }
+}
+
+.sliderCustomization {
+  :global {
+    .rc-slider-rail {
+      background: #040620;
+    }
+    .rc-slider-handle {
+      position: absolute;
+      width: 26px;
+      height: 26px;
+      cursor: pointer;
+      cursor: -webkit-grab;
+      cursor: grab;
+      border-radius: 50%;
+      border: none;
+      background-color: #fff;
+      touch-action: pan-x;
+      box-shadow: inset 0 1px 0 hsla(0,0%,100%,.2), 0 1px 3px #000;
+    }
+    .rc-slider-handle:hover {
+      border-color: none;
+    }
+  }
+}
+
+.horizontalSlider {
+  margin: 18px 0;
+  :global {
+    .rc-slider-handle {
+      margin-top: -11px;
+    }    
+  }
+
+}
+
+.rangeSlider {
+  :global {
+    .rc-slider-handle {
+      margin-top: -11px;
+    }    
+  }
+}
+
+.sliderGrey {
+  :global {
+    .rc-slider-track {
+      background-color: $gray;
+    }
+  }
+}
+.sliderBlue {
+  :global {
+    .rc-slider-track {
+      background-color: $blue;
+    }
+  }
+}
+.sliderInfo {
+  :global {
+    .rc-slider-track {
+      background-color: $info;
+    }
+  }
+}
+.sliderRed {
+  :global {
+    .rc-slider-track {
+      background-color: $red;
+    }
+  }
+}
+.sliderYellow {
+  :global {
+    .rc-slider-track {
+      background-color: $yellow;
+    }
+  }
+}
+.sliderGreen {
+  :global {
+    .rc-slider-track {
+      background-color: $green;
+    }
+  }
+}
+
+/* rc-slider customization end */
+
+/* react-select customization */
+
+:global {
+  .selectCustomization {
+    > div {
+      background: $bg-custom-dark;
+      border: 1px solid $bg-custom-dark;
+    }
+    .react-select__single-value {
+      color: $content-color;
+    }
+    .react-select__option--is-focused {
+      background: $subtle-blue;
+    }
+    .react-select__option--is-selected {
+      background: rgba($subtle-blue,.6);
+    }
+  } 
+  .mde-text textarea {
+    background: $bg-custom-dark;
+  }
+  .rc-slider-handle {
+    background: $subtle-blue !important;
+  }
+  legend {
+    border-bottom: 1px solid $bg-custom-dark;
+  }
+}
+
+/* react-select end */
