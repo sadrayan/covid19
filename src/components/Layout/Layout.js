@@ -1,13 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Switch, Route, withRouter, Redirect } from 'react-router';
+import { Switch, Route, withRouter } from 'react-router';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import Hammer from 'rc-hammerjs';
 
 import Dashboard from '../../pages/dashboard';
 
-import Header from '../Header';
 import Sidebar from '../Sidebar';
 import { openSidebar, closeSidebar } from '../../actions/navigation';
 import s from './Layout.module.scss';
