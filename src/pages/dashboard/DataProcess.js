@@ -74,15 +74,23 @@ const getPercentageChange = (oldNumber, newNumber) => {
 }
 
 const applyFilter = (caseDataPoints, filter) => {
-    if (filter === 'All')
+    if (filter === ['All'])
         return caseDataPoints
 
     for (let key in caseDataPoints)
-        caseDataPoints[key] = caseDataPoints[key].filter(datapoint => datapoint['countryRegion'] === this.state.countryFilter)
+        caseDataPoints[key] = caseDataPoints[key].filter(datapoint => filter.includes(datapoint['countryRegion']))
 
     console.log('applying filter', this.state.countryFilter, caseDataPoints)
     return caseDataPoints
 }
+
+
+export function projectEstimates(caseDataPoints){
+    caseDataPoints = applyFilter(caseDataPoints, ['China', 'Iran', 'Italy', 'Japan', 'France', 'Germany', 'Spain', 'US', 'UK', 'Switzerland'])
+    console.log('projecting...', caseDataPoints)
+}
+
+
 
 export function generateData(caseDataPoints, filter) {
     let smallStats = []
