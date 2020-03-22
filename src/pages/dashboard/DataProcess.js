@@ -2,28 +2,31 @@ import processDataType from './utils'
 var nf = new Intl.NumberFormat();
 
 let statsStyles = {
-    "CONFIRMED": {
+    "Confirmed": {
         backgroundColor: "rgba(255,180,0,1)",
         backgroundColorLighter: "rgba(255,180,0,0.8)",
         backgroundColorFade: "rgba(255,180,0,0)",
-        borderColor: "rgb(255,180,0)"
+        borderColor: "rgb(255,180,0)", 
+        rgb : '#ffb400'
     },
-    "RECOVERED": {
+    "Recovered": {
         backgroundColor: "rgba(23,198,113,1)",
         backgroundColorLighter: "rgba(23,198,113,0.8)",
         backgroundColorFade: "rgba(23,198,113,0)",
-        borderColor: "rgb(23,198,113)"
+        borderColor: "rgb(23,198,113)",
+        rgb : '#14b265'
     },
-    "DEATH": {
+    "Death": {
         backgroundColor: "rgba(255,65,105,1)",
         backgroundColorLighter: "rgba(255,65,105,0.8)",
         backgroundColorFade: "rgba(255,65,105,0)",
-        borderColor: "rgb(255,65,105)"
+        borderColor: "rgb(255,65,105)",
+        rgb : '#ff4169'
     }
 }
 
 export function getCountryList(caseDataPoints) {
-    let confirmedDataPoints = caseDataPoints['CONFIRMED']
+    let confirmedDataPoints = caseDataPoints['Confirmed']
     let caseCountry = new Map()
 
     let sortedDates = Object.keys(confirmedDataPoints[0]['dataPoints']).sort((a, b) => a - b);
@@ -53,18 +56,17 @@ export function getCountryList(caseDataPoints) {
 
 export async function getLatestData() {
     const urlMap = {
-        'CONFIRMED': 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv',
-        'RECOVERED': 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Recovered.csv',
-        'DEATH': 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Deaths.csv'
+        'Confirmed': 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv',
+        'Recovered': 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Recovered.csv',
+        'Death': 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Deaths.csv'
     }
 
     let resultSet = {}
     for (let key in urlMap) {
         let result = await processDataType(key, urlMap[key])
-        // console.log(`processed ${key} with ${result.recordList.length} number of data points`)
         resultSet[key] = result.recordList
     }
-    console.log('in parent changing state', resultSet)
+
     return resultSet
 }
 
@@ -73,21 +75,17 @@ const getPercentageChange = (oldNumber, newNumber) => {
     return -(decreaseValue / oldNumber) * 100;
 }
 
-const applyFilter = (caseDataPoints, filter) => {
-    if (filter === ['All'])
+export function applyFilter (caseDataPoints, filter) {
+    if (filter === 'All')
         return caseDataPoints
+    
+    let caseDataPointsTemp = {}
 
     for (let key in caseDataPoints)
-        caseDataPoints[key] = caseDataPoints[key].filter(datapoint => filter.includes(datapoint['countryRegion']))
+    caseDataPointsTemp[key] = caseDataPoints[key].filter(datapoint => filter.includes(datapoint['countryRegion']))
 
-    console.log('applying filter', this.state.countryFilter, caseDataPoints)
-    return caseDataPoints
-}
-
-
-export function projectEstimates(caseDataPoints){
-    caseDataPoints = applyFilter(caseDataPoints, ['China', 'Iran', 'Italy', 'Japan', 'France', 'Germany', 'Spain', 'US', 'UK', 'Switzerland'])
-    console.log('projecting...', caseDataPoints)
+    console.log('applying filter', filter, caseDataPointsTemp)
+    return caseDataPointsTemp
 }
 
 
@@ -95,8 +93,7 @@ export function projectEstimates(caseDataPoints){
 export function generateData(caseDataPoints, filter) {
     let smallStats = []
 
-    // applyFilter(caseDataPoints, filter)
-    console.log(caseDataPoints)
+    caseDataPoints = applyFilter(caseDataPoints, filter)
 
     for (let key in caseDataPoints) {
         let data = []
@@ -108,7 +105,7 @@ export function generateData(caseDataPoints, filter) {
             data.push([caseDate, parseInt(totalPerDay.reduce((a, b) => a + b)) ])
         })
 
-        let percentage = getPercentageChange(data[data.length - 2][1], data[data.length - 1][1])
+        let percentage = getPercentageChange(data[data.length - 2][1], data[data.length - 1][1]) || 0
 
         smallStats.push({
             data: data,
@@ -129,16 +126,41 @@ export function generateData(caseDataPoints, filter) {
             lineWidth: 2
         });
     }
-
-    console.log('smallStats', smallStats)
-
     return smallStats;
+}
+
+export function generatePieData(caseDataPoints, filter) {
+    caseDataPoints = applyFilter(caseDataPoints, filter)
+
+    let pieData = {
+        data: [],
+        labels : [],
+        backgroundColor: []
+    }
+
+    for (let key in caseDataPoints) {
+        let data = []
+        let sortedDates = Object.keys(caseDataPoints[key][0]['dataPoints']).sort((a, b) => a - b);
+        sortedDates.forEach(caseDate => {
+            let totalPerDay = caseDataPoints[key].map(datapoint => datapoint['dataPoints'][caseDate])
+            data.push(totalPerDay.reduce((a, b) => a + b))
+        })
+        pieData['data'].push({
+            name: key,
+            y: data[data.length - 1]
+        })
+        pieData['backgroundColor'].push(statsStyles[key]['rgb'])
+        pieData['labels'].push(key)
+
+    }
+
+    return pieData
 }
 
 export function transformStats(caseDataPoints, filter) {
 
     applyFilter(caseDataPoints, filter)
-    console.log(caseDataPoints)
+    // console.log(caseDataPoints)
 
 
     let smallStats = []

@@ -3,12 +3,11 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Switch, Route, withRouter } from 'react-router';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
-import Hammer from 'rc-hammerjs';
+// import Hammer from 'rc-hammerjs';
 
 import Dashboard from '../../pages/dashboard';
 
-import Sidebar from '../Sidebar';
-import { openSidebar, closeSidebar } from '../../actions/navigation';
+import { Row, Col } from 'reactstrap';
 import s from './Layout.module.scss';
 
 class Layout extends React.Component {
@@ -22,28 +21,6 @@ class Layout extends React.Component {
     sidebarStatic: false,
     sidebarOpened: false,
   };
-  constructor(props) {
-    super(props);
-
-    this.handleSwipe = this.handleSwipe.bind(this);
-  }
-
-
-  handleSwipe(e) {
-    if ('ontouchstart' in window) {
-      if (e.direction === 4 && !this.state.chatOpen) {
-        this.props.dispatch(openSidebar());
-        return;
-      }
-
-      if (e.direction === 2 && this.props.sidebarOpened) {
-        this.props.dispatch(closeSidebar());
-        return;
-      }
-
-      this.setState({ chatOpen: e.direction === 2 });
-    }
-  }
 
   render() {
     return (
@@ -55,11 +32,7 @@ class Layout extends React.Component {
         ].join(' ')}
       >
         <div className={s.wrap}>
-          {/* <Header /> */}
-          {/* <Chat chatOpen={this.state.chatOpen} /> */}
-          {/* <Helper /> */}
-          <Sidebar />
-          <Hammer onSwipe={this.handleSwipe}>
+
             <main className={s.content}>
               <TransitionGroup>
                 <CSSTransition
@@ -72,11 +45,15 @@ class Layout extends React.Component {
                   </Switch>
                 </CSSTransition>
               </TransitionGroup>
-              <footer className={s.contentFooter}>
-                Contributions and acknoledgments <a href="https://flatlogic.com" >Maybe42.me</a>
-              </footer>
+              <Row>
+              <Col lg={1} />
+              <Col lg={10}>
+                <footer className={s.contentFooter}>
+                  Data is owned and managed <a href="https://github.com/CSSEGISandData/COVID-19">Johns Hopkins CSSE</a> public repository <a href="covid19watch.info" >Covid19watch.info</a>
+                </footer>
+              </Col>
+              </Row>
             </main>
-          </Hammer>
         </div>
       </div>
     );

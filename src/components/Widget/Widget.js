@@ -65,6 +65,7 @@ class Widget extends React.Component {
     options: {},
     fetchingData: false,
     widgetType: "",
+    removeMargin: false,
   };
 
   constructor(props) {
@@ -168,6 +169,7 @@ class Widget extends React.Component {
       collapsed,
       widgetType,
       updateWidgetData,
+      removeMargin,
       options, //eslint-disable-line
       ...attributes
     } = this.props;
@@ -330,7 +332,7 @@ class Widget extends React.Component {
           height={ height }
         >
 
-          <div className={`${s.widgetBody} widget-body ${bodyClass}`}>
+          <div className={`${s.widgetBody} widget-body ${bodyClass}`} style={removeMargin ? {padding: '2px 2px', marginTop: '-20px'} : {}} >
             {reloading || fetchingData ?  <Loader className={s.widgetLoader} size={40}/> : customBody ? (
                 <div className="jumbotron handle bg-default text-white mb-0">
                 <div className="container">

@@ -29,7 +29,7 @@ async function processDataType(type, url) {
         }
         var dataCasePair = {}
         headerDates.forEach((date, i) => {
-            dataCasePair[date.toISOString()] = parseInt(row[i + 4]) || 0 // header is ahead :)
+            dataCasePair[date.toISOString().split('T')[0]] = parseInt(row[i + 4]) || 0 // header is ahead :)
         })
         dataPoint['dataPoints'] = dataCasePair
         recordList.push(dataPoint)

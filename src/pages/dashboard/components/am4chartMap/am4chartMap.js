@@ -2,31 +2,14 @@ import React, { Component } from 'react';
 
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4maps from "@amcharts/amcharts4/maps";
-import cities from './mock';
+import getMapData from './MapData';
 import am4geodata_worldLow from "@amcharts/amcharts4-geodata/worldLow";
 
 import s from './am4chartMap.module.scss';
 
 class Am4chartMap extends Component {
 
-  constructor(props) {
-    super(props);
-
-    this.animateBullet = this.animateBullet.bind(this);
-  }
-
-  animateBullet(circle) {
-    var animation = circle.animate([
-      { property: "scale", from: 1, to: 5 },
-      { property: "opacity", from: 1, to: 0 }],
-      1000, am4core.ease.circleOut);
-
-    animation.events.on("animationended", (event) => {
-      this.animateBullet(event.target.object);
-    })
-  }
-
-  componentDidMount() {
+  componentDidUpdate() {
     let map = am4core.create("map", am4maps.MapChart);
     map.geodata = am4geodata_worldLow;
     map.percentHeight = 90;
@@ -37,7 +20,6 @@ class Am4chartMap extends Component {
     map.homeZoomLevel = 1;
     // Exclude Antartica
     polygonSeries.exclude = ["AQ"];
-
 
     map.zoomControl = new am4maps.ZoomControl();
     map.zoomControl.layout = 'horizontal';
@@ -73,29 +55,31 @@ class Am4chartMap extends Component {
     let hs = polygonTemplate.states.create("hover");
     hs.properties.fill = am4core.color("#354D84");
 
-    // Add map points series
-    var imageSeries = map.series.push(new am4maps.MapImageSeries());
-    imageSeries.mapImages.template.propertyFields.longitude = "longitude";
-    imageSeries.mapImages.template.propertyFields.latitude = "latitude";
-    imageSeries.mapImages.template.tooltipText = "{tooltip}";
-    imageSeries.mapImages.template.propertyFields.url = "url";
+    let citySeries = map.series.push(new am4maps.MapImageSeries());
+    citySeries.data = getMapData(this.props.caseDataPoints);
+    citySeries.dataFields.value = "size";
 
-    var circle = imageSeries.mapImages.template.createChild(am4core.Circle);
-    circle.radius = 3;
-    circle.propertyFields.fill = "color";
+    
+    let cityTemplate = citySeries.mapImages.template;
+    cityTemplate.nonScaling = true;
+    cityTemplate.propertyFields.latitude = "latitude";
+    cityTemplate.propertyFields.longitude = "longitude";
+    cityTemplate.fill = am4core.color("#bf7569");
+    cityTemplate.strokeOpacity = 0;
+    cityTemplate.fillOpacity = 0.75;
+    cityTemplate.tooltipPosition = "fixed";
 
-    var circle2 = imageSeries.mapImages.template.createChild(am4core.Circle);
-    circle2.radius = 3;
-    circle2.propertyFields.fill = "color";
-    // add data
-    imageSeries.data = cities; // this is the data
+    let circle = cityTemplate.createChild(am4core.Circle);
+    circle.fill = am4core.color("rgba(255,65,105,0.8)");
+    circle.strokeWidth = 0;
 
-    circle2.events.on("inited", (event) => {
-      this.animateBullet(event.target);
-    })
+    let circleHoverState = circle.states.create("hover");
+    circleHoverState.properties.strokeWidth = 1;
+    circle.tooltipText = '{tooltip}';
+    circle.propertyFields.radius = 'size';
+
     this.map = map;
   }
-
 
   componentWillUnmount() {
     if (this.map) {
