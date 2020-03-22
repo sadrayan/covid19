@@ -44,7 +44,7 @@ class Dashboard extends React.Component {
             <h1 className="page-title">COVID19Watch<small>.info</small>
             </h1>
           </Col>
-        </Row>
+        </Row> 
 
         <Row>
           <Col lg={1} />
