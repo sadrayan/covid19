@@ -41,8 +41,7 @@ class Dashboard extends React.Component {
         <Row>
           <Col lg={1} />
           <Col lg={7}>
-            <h1 className="page-title">COVID-19 &nbsp;
-              <small> <small>Dashboard</small> </small>
+            <h1 className="page-title">COVID19Watch<small>.info</small>
             </h1>
           </Col>
         </Row>
