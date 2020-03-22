@@ -19,7 +19,7 @@ class Dashboard extends React.Component {
     super(props);
     this.state = {
       selectCountryData: [{ value: 'All', label: 'All' }],
-      countryFilter : 'All'
+      countryFilter: 'All'
     };
   }
 
@@ -31,7 +31,7 @@ class Dashboard extends React.Component {
 
   handleFilterUpdate = (event) => {
     console.log(event)
-    this.setState({countryFilter: event.value});
+    this.setState({ countryFilter: event.value });
   }
 
 
@@ -41,16 +41,18 @@ class Dashboard extends React.Component {
         <Row>
           <Col lg={1} />
           <Col lg={7}>
-            <h1 className="page-title">COVID19Watch<small>.info</small>
-            </h1>
+            <h1 className="page-title">COVID19Watch<small>.info</small> </h1>
           </Col>
-        </Row> 
+          <Col xl={3} lg={3} md={6} xs={12}>
+            <h2 className="page-title" style={{textAlign: 'center'}} ><small><small>{new Date().toUTCString()}</small></small>  </h2>
+          </Col>
+        </Row>
 
         <Row>
           <Col lg={1} />
           <Col lg={7}>
             <Widget className="bg-transparent">
-              <Map caseDataPoints={applyFilter(this.state.caseDataPoints,  this.state.countryFilter)} />
+              <Map caseDataPoints={applyFilter(this.state.caseDataPoints, this.state.countryFilter)} />
             </Widget>
           </Col>
 
@@ -79,17 +81,17 @@ class Dashboard extends React.Component {
           </Col>
         </Row>
 
-        
+
 
         <Row>
           <Col lg={1} />
           <Col lg={6} xs={12}>
-            <OveralMainChart data={generateData(this.state.caseDataPoints,  this.state.countryFilter)} />
+            <OveralMainChart data={generateData(this.state.caseDataPoints, this.state.countryFilter)} />
           </Col>
           <Col lg={4} xs={12}>
-            <PieChart data={generatePieData(this.state.caseDataPoints, this.state.countryFilter)}  />
+            <PieChart data={generatePieData(this.state.caseDataPoints, this.state.countryFilter)} />
           </Col>
-          
+
         </Row>
 
       </div>
