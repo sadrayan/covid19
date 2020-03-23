@@ -6,22 +6,22 @@ let statsStyles = {
         backgroundColor: "rgba(255,180,0,1)",
         backgroundColorLighter: "rgba(255,180,0,0.8)",
         backgroundColorFade: "rgba(255,180,0,0)",
-        borderColor: "rgb(255,180,0)", 
-        rgb : '#ffb400'
+        borderColor: "rgb(255,180,0)",
+        rgb: '#ffb400'
     },
     "Recovered": {
         backgroundColor: "rgba(23,198,113,1)",
         backgroundColorLighter: "rgba(23,198,113,0.8)",
         backgroundColorFade: "rgba(23,198,113,0)",
         borderColor: "rgb(23,198,113)",
-        rgb : '#14b265'
+        rgb: '#14b265'
     },
     "Death": {
         backgroundColor: "rgba(255,65,105,1)",
         backgroundColorLighter: "rgba(255,65,105,0.8)",
         backgroundColorFade: "rgba(255,65,105,0)",
         borderColor: "rgb(255,65,105)",
-        rgb : '#ff4169'
+        rgb: '#ff4169'
     }
 }
 
@@ -64,6 +64,7 @@ export async function getLatestData() {
     let resultSet = {}
     for (let key in urlMap) {
         let result = await processDataType(key, urlMap[key])
+        result.recordList['colors'] = statsStyles[key]
         resultSet[key] = result.recordList
     }
 
@@ -75,16 +76,15 @@ const getPercentageChange = (oldNumber, newNumber) => {
     return -(decreaseValue / oldNumber) * 100;
 }
 
-export function applyFilter (caseDataPoints, filter) {
+export function applyFilter(caseDataPoints, filter) {
     if (filter === 'All')
         return caseDataPoints
-    
+
     let caseDataPointsTemp = {}
 
     for (let key in caseDataPoints)
-    caseDataPointsTemp[key] = caseDataPoints[key].filter(datapoint => filter.includes(datapoint['countryRegion']))
+        caseDataPointsTemp[key] = caseDataPoints[key].filter(datapoint => filter === datapoint['countryRegion'])
 
-    console.log('applying filter', filter, caseDataPointsTemp)
     return caseDataPointsTemp
 }
 
@@ -102,7 +102,7 @@ export function generateData(caseDataPoints, filter) {
 
         sortedDates.forEach(caseDate => {
             let totalPerDay = caseDataPoints[key].map(datapoint => datapoint['dataPoints'][caseDate])
-            data.push([caseDate, parseInt(totalPerDay.reduce((a, b) => a + b)) ])
+            data.push([caseDate, parseInt(totalPerDay.reduce((a, b) => a + b))])
         })
 
         let percentage = getPercentageChange(data[data.length - 2][1], data[data.length - 1][1]) || 0
@@ -115,7 +115,12 @@ export function generateData(caseDataPoints, filter) {
             increase: percentage >= 0,
             color: statsStyles[key]['backgroundColor'],
             fillColor: {
-                linearGradient: {x1: 0,x2: 0,y1: 0,y2: 1},
+                linearGradient: {
+                    x1: 0,
+                    x2: 0,
+                    y1: 0,
+                    y2: 1
+                },
                 stops: [
                     [0, statsStyles[key]['backgroundColorLighter']],
                     [1, statsStyles[key]['backgroundColorFade']]
@@ -134,7 +139,7 @@ export function generatePieData(caseDataPoints, filter) {
 
     let pieData = {
         data: [],
-        labels : [],
+        labels: [],
         backgroundColor: []
     }
 

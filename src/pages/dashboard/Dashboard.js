@@ -5,12 +5,13 @@ import Widget from '../../components/Widget';
 
 import Map from './components/am4chartMap/am4chartMap';
 import { getLatestData, getCountryList, generateData, generatePieData, applyFilter } from './DataProcess'
-import SmallStat from '../widgets/components/flot-charts/SmallStat';
+import SmallStat from '../widgets/components/charts/SmallStat';
 
 import s from './Dashboard.module.scss';
 import formStyle from '../forms/elements/Elements.module.scss'
-import OveralMainChart from '../analytics/components/Charts/OveralMainChart';
-import PieChart from '../charts/apex/PieChart';
+import OveralMainChart from '../widgets/components/charts/OveralMainChart';
+import PieChart from '../widgets/components/charts/PieChart';
+import CountryCompareChart from '../widgets/components/charts/CountryCompareChart';
 
 
 class Dashboard extends React.Component {
@@ -30,7 +31,7 @@ class Dashboard extends React.Component {
   }
 
   handleFilterUpdate = (event) => {
-    console.log(event)
+    // console.log(event)
     this.setState({ countryFilter: event.value });
   }
 
@@ -82,6 +83,15 @@ class Dashboard extends React.Component {
         </Row>
 
 
+        <Row>
+          <Col lg={1} />
+          <Col lg={6} xs={12}>
+            <CountryCompareChart data={this.state.caseDataPoints} selectCountryData={this.state.selectCountryData}  />
+          </Col>
+          <Col lg={4} xs={12}>
+            {/* <PieChart data={generatePieData(this.state.caseDataPoints, this.state.countryFilter)} /> */}
+          </Col>
+        </Row>         
 
         <Row>
           <Col lg={1} />
@@ -91,7 +101,6 @@ class Dashboard extends React.Component {
           <Col lg={4} xs={12}>
             <PieChart data={generatePieData(this.state.caseDataPoints, this.state.countryFilter)} />
           </Col>
-
         </Row>
 
       </div>
