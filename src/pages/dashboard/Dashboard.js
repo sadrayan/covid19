@@ -12,6 +12,7 @@ import formStyle from '../forms/elements/Elements.module.scss'
 import OveralMainChart from '../widgets/components/charts/OveralMainChart';
 import PieChart from '../widgets/components/charts/PieChart';
 import CountryCompareChart from '../widgets/components/charts/CountryCompareChart';
+import CaseCountryPieChart from '../widgets/components/charts/CaseCountryPieChart';
 
 
 class Dashboard extends React.Component {
@@ -85,7 +86,7 @@ class Dashboard extends React.Component {
             <CountryCompareChart data={this.state.caseDataPoints} selectCountryData={this.state.selectCountryData}  />
           </Col>
           <Col lg={4} xs={12}>
-            {/* <PieChart data={generatePieData(this.state.caseDataPoints, this.state.countryFilter)} /> */}
+            <CaseCountryPieChart data={applyFilter(this.state.caseDataPoints, this.state.countryFilter)} />
           </Col>
         </Row>         
 
