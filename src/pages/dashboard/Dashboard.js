@@ -30,11 +30,7 @@ class Dashboard extends React.Component {
     this.setState({ caseDataPoints: caseDataPoints, selectCountryData: selectCountryData })
   }
 
-  handleFilterUpdate = (event) => {
-    // console.log(event)
-    this.setState({ countryFilter: event.value });
-  }
-
+  handleFilterUpdate = (event) => {  this.setState({ countryFilter: event.value });  }
 
   render() {
     return (
