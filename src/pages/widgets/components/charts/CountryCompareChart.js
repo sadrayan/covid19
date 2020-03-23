@@ -37,7 +37,7 @@ export default class CountryCompareChart extends PureComponent {
   getCountryChartData() {
     let countryList = Object.values(this.state.countryFilter)
     let series = []
-    var colorsPallete = [  '#F45722', '#474D84'] 
+    var colorsPallete = [ colors.blue, colors.red ] 
     var countryColor = []
     var categories = []
 

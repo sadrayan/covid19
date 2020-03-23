@@ -5,7 +5,6 @@ import HighchartsReact from 'highcharts-react-official'
 import Highcharts from 'highcharts';
 import variablePie from 'highcharts/modules/variable-pie';
 import config from '../config.js';
-import { applyFilter } from '../../../dashboard/DataProcess';
 const colors = config.chartColors;
 
 variablePie(Highcharts);
@@ -30,98 +29,10 @@ export default class CaseCountryPieChart extends PureComponent {
     this.setState({ selectedType: event.target.value });
   };
 
-  getCountryChartDatajj() {
-    let countryList = Object.values(this.state.countryFilter)
-    let series = []
-    var colorsPallete = ['#F45722', '#474D84']
-    var countryColor = []
-    var categories = []
-
-    if (this.props['data']['Confirmed']) {
-
-      countryList.forEach(country => {
-        let countryCasePoints = applyFilter(this.props['data'], country)
-        let data = []
-        let sortedDates = Object.keys(countryCasePoints[this.state.selectedType][0]['dataPoints']).sort((a, b) => a - b);
-        sortedDates = sortedDates.slice(Math.max(sortedDates.length - 15, 0))
-
-        sortedDates.forEach(caseDate => {
-          let totalPerDay = countryCasePoints[this.state.selectedType].map(datapoint => datapoint['dataPoints'][caseDate])
-          data.push([caseDate, parseInt(totalPerDay.reduce((a, b) => a + b))])
-        })
-        countryColor.push(colorsPallete.shift())
-        categories.push(sortedDates)
-
-        series.push({
-          name: country,
-          data: data
-        })
-      })
-    }
-
-    let column3D = {
-      credits: {
-        enabled: false
-      },
-      colors: countryColor,
-      chart: {
-        backgroundColor: 'transparent',
-        type: 'column',
-        options3d: {
-          enabled: true,
-          alpha: 10,
-          beta: 25,
-          depth: 70
-        }
-      },
-      exporting: {
-        enabled: false
-      },
-      title: false,
-      legend: {
-        itemStyle: {
-          color: colors.textColor
-        }
-      },
-      subtitle: {
-        text: 'Past 15 days',
-        style: {
-          color: colors.textColor
-        }
-      },
-      plotOptions: {
-        column: {
-          depth: 25
-        }
-      },
-      xAxis: {
-        categories: categories[0],
-        labels: {
-          skew3d: true,
-          style: {
-            fontSize: '10px',
-            color: colors.textColor
-          }
-        },
-        gridLineColor: colors.gridLineColor
-      },
-      yAxis: {
-        title: {
-          text: null
-        },
-        gridLineColor: colors.gridLineColor
-      },
-      series: series
-    }
-
-    return column3D
-  }
-
-
   getCountryChartData() {
     let series = []
     let caseDataPoints = this.props.data
-    console.log(caseDataPoints)
+
     if (caseDataPoints['Confirmed']) {
       let confirmedDataPoints = caseDataPoints['Confirmed']
       let caseCountry = new Map()
@@ -136,12 +47,10 @@ export default class CaseCountryPieChart extends PureComponent {
       })
       // sort by case confirmed
       caseCountry = Array.from([...caseCountry.entries()].sort((a, b) => b[1] - a[1]));
-      // caseCountry =  (caseCountry)
-      caseCountry = caseCountry.slice(0, 10)
-      console.log(caseCountry)
+      caseCountry = caseCountry.slice(0, 10) // choose top most infected regions
 
       let total = caseCountry.reduce((cnt, a) => cnt + a[1], 0)
-      console.log(total)
+
       caseCountry.forEach(el => {
         series.push({
           name: el[0],
@@ -149,7 +58,6 @@ export default class CaseCountryPieChart extends PureComponent {
           z: el[1]
         })
       })
-
 
     }
 
@@ -160,7 +68,7 @@ export default class CaseCountryPieChart extends PureComponent {
       chart: {
         type: 'variablepie',
         backgroundColor: 'transparent',
-        height: 350
+        height: 450
       },
       exporting: {
         enabled: false
@@ -201,11 +109,11 @@ export default class CaseCountryPieChart extends PureComponent {
   render() {
 
     return (
-      <Widget
+      <Widget 
         title={<h5>Top <span className="fw-semi-bold">10 Impacted Countries</span></h5>}
         close collapse
       >
-        <HighchartsReact options={this.getCountryChartData()} />
+        <HighchartsReact  options={this.getCountryChartData()} />
       </Widget>
     );
   }

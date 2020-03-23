@@ -80,13 +80,13 @@ class Dashboard extends React.Component {
         </Row>
 
 
-        <Row>
+        <Row >
           <Col lg={1} />
           <Col lg={6} xs={12}>
             <CountryCompareChart data={this.state.caseDataPoints} selectCountryData={this.state.selectCountryData}  />
           </Col>
-          <Col lg={4} xs={12}>
-            <CaseCountryPieChart data={applyFilter(this.state.caseDataPoints, this.state.countryFilter)} />
+          <Col lg={4} xs={12} >
+            <CaseCountryPieChart data={this.state.caseDataPoints} />
           </Col>
         </Row>         
 
