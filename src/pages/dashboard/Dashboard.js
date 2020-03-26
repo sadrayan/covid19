@@ -14,6 +14,14 @@ import PieChart from '../widgets/components/charts/PieChart';
 import CountryCompareChart from '../widgets/components/charts/CountryCompareChart';
 import CaseCountryPieChart from '../widgets/components/charts/CaseCountryPieChart';
 
+// import { API, graphqlOperation } from "aws-amplify"
+// import { listCasePoints } from '../../graphql/queries'
+import Amplify from "aws-amplify"
+import awsconfig from "../../aws-exports"
+
+// var moment = require('moment')
+
+Amplify.configure(awsconfig)
 
 class Dashboard extends React.Component {
 
@@ -26,12 +34,32 @@ class Dashboard extends React.Component {
   }
 
   async componentDidMount() {
+    // await this.getDataPoints()
+
+
     let caseDataPoints = await getLatestData()
     let selectCountryData = getCountryList(caseDataPoints)
     this.setState({ caseDataPoints: caseDataPoints, selectCountryData: selectCountryData })
   }
 
-  handleFilterUpdate = (event) => {  this.setState({ countryFilter: event.value });  }
+  // getDataPoints = async () => {
+  //   let filterDate = moment().utc().subtract(1, 'days').endOf('day')
+  //   console.log(filterDate.format())
+  //   const result = await API.graphql(graphqlOperation(listCasePoints,   {
+  //     limit: 10000,
+  //     filter: {
+  //       date: {
+  //         eq: filterDate.format(),
+  //       },
+  //       countryRegion: {
+  //         eq: "US"
+  //       }
+  //     }
+  //   }))
+  //   console.log(result.data.listCasePoints.items.length)
+  // }
+
+  handleFilterUpdate = (event) => { this.setState({ countryFilter: event.value }); }
 
   render() {
     return (
@@ -42,7 +70,7 @@ class Dashboard extends React.Component {
             <h1 className="page-title">COVID19Watch<small>.info</small> </h1>
           </Col>
           <Col xl={3} lg={3} md={6} xs={12}>
-            <h2 className="page-title" style={{textAlign: 'center'}} ><small><small>{new Date().toUTCString()}</small></small>  </h2>
+            <h2 className="page-title" style={{ textAlign: 'center' }} ><small><small>{new Date().toUTCString()}</small></small>  </h2>
           </Col>
         </Row>
 
@@ -83,12 +111,12 @@ class Dashboard extends React.Component {
         <Row >
           <Col lg={1} />
           <Col lg={6} xs={12}>
-            <CountryCompareChart data={this.state.caseDataPoints} selectCountryData={this.state.selectCountryData}  />
+            <CountryCompareChart data={this.state.caseDataPoints} selectCountryData={this.state.selectCountryData} />
           </Col>
           <Col lg={4} xs={12} >
             <CaseCountryPieChart data={this.state.caseDataPoints} />
           </Col>
-        </Row>         
+        </Row>
 
         <Row>
           <Col lg={1} />
