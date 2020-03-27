@@ -10,6 +10,11 @@
             "StackName": "amplify-covid19watchinfo-dev-223918",
             "StackId": "arn:aws:cloudformation:us-east-1:575711874019:stack/amplify-covid19watchinfo-dev-223918/55dc6a20-6be6-11ea-adfe-1225390e8313",
             "AmplifyAppId": "d1fpzhsloc6yxm"
+        },
+        "categories": {
+            "auth": {
+                "cognito8e505a24": {}
+            }
         }
     }
 }

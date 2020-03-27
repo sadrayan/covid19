@@ -50,3 +50,41 @@ export const listCasePoints = /* GraphQL */ `
     }
   }
 `;
+export const casePointByCountry = /* GraphQL */ `
+  query CasePointByCountry(
+    $countryRegion: String
+    $date: ModelStringKeyConditionInput
+    $sortDirection: ModelSortDirection
+    $filter: ModelCasePointFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    casePointByCountry(
+      countryRegion: $countryRegion
+      date: $date
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        FIPS
+        admin2
+        provinceState
+        countryRegion
+        lastUpdate
+        lat
+        long
+        confirmed
+        deaths
+        recovered
+        active
+        combinedKey
+        date
+        createdAt
+      }
+      nextToken
+    }
+  }
+`;

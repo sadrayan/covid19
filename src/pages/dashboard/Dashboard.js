@@ -13,15 +13,7 @@ import OveralMainChart from '../widgets/components/charts/OveralMainChart';
 import PieChart from '../widgets/components/charts/PieChart';
 import CountryCompareChart from '../widgets/components/charts/CountryCompareChart';
 import CaseCountryPieChart from '../widgets/components/charts/CaseCountryPieChart';
-
-// import { API, graphqlOperation } from "aws-amplify"
-// import { listCasePoints } from '../../graphql/queries'
-import Amplify from "aws-amplify"
-import awsconfig from "../../aws-exports"
-
-// var moment = require('moment')
-
-Amplify.configure(awsconfig)
+import {getDataPoints} from './DataHelper'
 
 class Dashboard extends React.Component {
 
@@ -34,7 +26,7 @@ class Dashboard extends React.Component {
   }
 
   async componentDidMount() {
-    // await this.getDataPoints()
+    // await getDataPoints()
 
 
     let caseDataPoints = await getLatestData()
@@ -42,22 +34,6 @@ class Dashboard extends React.Component {
     this.setState({ caseDataPoints: caseDataPoints, selectCountryData: selectCountryData })
   }
 
-  // getDataPoints = async () => {
-  //   let filterDate = moment().utc().subtract(1, 'days').endOf('day')
-  //   console.log(filterDate.format())
-  //   const result = await API.graphql(graphqlOperation(listCasePoints,   {
-  //     limit: 10000,
-  //     filter: {
-  //       date: {
-  //         eq: filterDate.format(),
-  //       },
-  //       countryRegion: {
-  //         eq: "US"
-  //       }
-  //     }
-  //   }))
-  //   console.log(result.data.listCasePoints.items.length)
-  // }
 
   handleFilterUpdate = (event) => { this.setState({ countryFilter: event.value }); }
 

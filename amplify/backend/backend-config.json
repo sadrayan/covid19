@@ -1,20 +1,31 @@
 {
 	"api": {
-		"covid19watchinfo": {
-			"service": "AppSync",
+		"covidapi": {
+			"service": "API Gateway",
 			"providerPlugin": "awscloudformation",
-			"output": {
-				"authConfig": {
-					"additionalAuthenticationProviders": [],
-					"defaultAuthentication": {
-						"authenticationType": "API_KEY",
-						"apiKeyConfig": {
-							"description": "",
-							"apiKeyExpirationDays": 7
-						}
-					}
+			"dependsOn": [
+				{
+					"category": "function",
+					"resourceName": "covidfunction",
+					"attributes": [
+						"Name",
+						"Arn"
+					]
 				}
-			}
+			]
+		}
+	},
+	"function": {
+		"covidfunction": {
+			"service": "Lambda",
+			"providerPlugin": "awscloudformation",
+			"build": true
+		}
+	},
+	"auth": {
+		"cognito8e505a24": {
+			"service": "Cognito",
+			"providerPlugin": "awscloudformation"
 		}
 	}
 }
