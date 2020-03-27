@@ -135,7 +135,11 @@ export default class CountryCompareChart extends PureComponent {
             <Label for="radio1">Confirmed</Label>
           </FormGroup>
           <FormGroup size='sm' style={{ marginLeft: '10px' }} className="radio abc-radio">
-            <Input type="radio" id="radio3" name="radio1" value="Death" onChange={this.handleChange} />
+            <Input type="radio" name="radio2" id="radio2" value="Recovered" onChange={this.handleChange} />
+            <Label for="radio2">Recovered</Label>
+          </FormGroup>
+          <FormGroup size='sm' style={{ marginLeft: '10px' }} className="radio abc-radio">
+            <Input type="radio" id="radio3" name="radio3" value="Death" onChange={this.handleChange} />
             <Label for="radio3">Death</Label>
           </FormGroup>
         </Row>

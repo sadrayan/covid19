@@ -54,7 +54,7 @@ class Dashboard extends React.Component {
             </Widget>
           </Col>
 
-          <Col xl={3} lg={3} md={6} xs={12} className='align-self-center'>
+          <Col xl={3} lg={3} md={6} xs={12} >
 
             <FormGroup row>
               <Col className={formStyle.select2}>
