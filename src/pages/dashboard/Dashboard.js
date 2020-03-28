@@ -13,7 +13,11 @@ import OveralMainChart from '../widgets/components/charts/OveralMainChart';
 import PieChart from '../widgets/components/charts/PieChart';
 import CountryCompareChart from '../widgets/components/charts/CountryCompareChart';
 import CaseCountryPieChart from '../widgets/components/charts/CaseCountryPieChart';
-import {getDataPoints} from './DataHelper'
+
+import Amplify, { API } from 'aws-amplify'
+import awsconfig from "../../aws-exports"
+
+Amplify.configure(awsconfig)
 
 class Dashboard extends React.Component {
 
@@ -27,6 +31,9 @@ class Dashboard extends React.Component {
 
   async componentDidMount() {
     // await getDataPoints()
+
+    const data = await API.get('covidapi', '/casePoint/totalStat')
+    console.log(data)
 
 
     let caseDataPoints = await getLatestData()

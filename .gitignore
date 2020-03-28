@@ -36,3 +36,5 @@ awsconfiguration.json
 amplifyconfiguration.json
 amplify-gradle-config.json
 amplifyxc.config
+
+amplify/backend/function/covidfunction/src/variables.env

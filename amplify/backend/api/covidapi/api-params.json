@@ -1,0 +1,37 @@
+{
+    "paths": [
+        {
+            "name": "/casePoint",
+            "lambdaFunction": "covidfunction",
+            "privacy": {
+                "private": true,
+                "auth": [
+                    "/GET"
+                ]
+            }
+        }
+    ],
+    "resourceName": "covidapi",
+    "apiName": "covidapi",
+    "functionArns": [
+        {
+            "lambdaFunction": "covidfunction"
+        }
+    ],
+    "privacy": {
+        "auth": 1,
+        "unauth": 0,
+        "authRoleName": "amplify-covid19watchinfo-dev-223918-authRole",
+        "unAuthRoleName": "amplify-covid19watchinfo-dev-223918-unauthRole"
+    },
+    "dependsOn": [
+        {
+            "category": "function",
+            "resourceName": "covidfunction",
+            "attributes": [
+                "Name",
+                "Arn"
+            ]
+        }
+    ]
+}
