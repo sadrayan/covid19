@@ -4,10 +4,7 @@
             "name": "/casePoint",
             "lambdaFunction": "covidfunction",
             "privacy": {
-                "private": true,
-                "auth": [
-                    "/GET"
-                ]
+                "open": true
             }
         }
     ],
@@ -19,7 +16,7 @@
         }
     ],
     "privacy": {
-        "auth": 1,
+        "auth": 0,
         "unauth": 0,
         "authRoleName": "amplify-covid19watchinfo-dev-223918-authRole",
         "unAuthRoleName": "amplify-covid19watchinfo-dev-223918-unauthRole"
@@ -33,5 +30,6 @@
                 "Arn"
             ]
         }
-    ]
+    ],
+    "uuid": "5e962d18"
 }

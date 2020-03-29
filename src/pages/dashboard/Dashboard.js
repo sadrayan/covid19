@@ -16,8 +16,12 @@ import CaseCountryPieChart from '../widgets/components/charts/CaseCountryPieChar
 
 import Amplify, { API } from 'aws-amplify'
 import awsconfig from "../../aws-exports"
+import CaseTypeStat from '../widgets/components/charts/CaseTypeStats';
 
 Amplify.configure(awsconfig)
+
+var nf = new Intl.NumberFormat();
+
 
 class Dashboard extends React.Component {
 
@@ -33,11 +37,17 @@ class Dashboard extends React.Component {
     // await getDataPoints()
 
     const data = await API.get('covidapi', '/casePoint/totalStat')
-    console.log(data)
 
+    const selectCountryResult = await API.get('covidapi', '/casePoint/overviewStats')
+    console.log(selectCountryResult.body)
+    let selectCountryData = selectCountryResult.body.map(el => {
+      return { value: el.country, label: `${el.country}  ${nf.format(el.confirmed)}` }
+    })
+    selectCountryData.unshift({ value: 'All', label: 'All' })
+    console.log(selectCountryData)
 
     let caseDataPoints = await getLatestData()
-    let selectCountryData = getCountryList(caseDataPoints)
+
     this.setState({ caseDataPoints: caseDataPoints, selectCountryData: selectCountryData })
   }
 
@@ -84,10 +94,26 @@ class Dashboard extends React.Component {
                 title={stats['name']}
                 data={[stats]}
                 percentage={stats.percentage}
-                increase={stats.increase} />
+                increase={stats.increase} 
+                countryFilter={this.state.countryFilter}
+                />
             ))}
 
+
+
+
+
           </Col>
+        </Row>
+
+        <Row>
+          <Col lg={1} />
+          <Col lg={10}>
+            <CaseTypeStat 
+              countryFilter={this.state.countryFilter}
+            />
+          </Col>
+          
         </Row>
 
 
