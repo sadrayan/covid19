@@ -222,12 +222,16 @@ app.post('/casePoint/batchCasePoint', async function (req, res) {
   else {
     reportDates = processDateResult.map(el => moment(el.reportDate).utc().format('MM-DD-YYYY'))
     date = moment(processDateResult[0].reportDate).utc()
+    date.add(1, 'days')
   }
 
-  while (date.isBefore(moment(new Date()).utc()) && !reportDates.includes(date.format('MM-DD-YYYY'))) {
+  console.log(date.format(), date.isBefore(moment(new Date()).utc()))
+  console.log(reportDates)
+
+  while (date.isBefore(moment.utc(new Date()))) {
 
     var data = await batchHandler(date.format('MM-DD-YYYY'))
-    if (data[0] === '404: Not Found')
+    if (data[0] === '404: Not Found' || reportDates.includes(date.format('MM-DD-YYYY'))) // check 
       break
 
     console.log('Processing: ', date.format('MM-DD-YYYY'), 'with datapoints: ', data.length)

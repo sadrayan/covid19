@@ -7,8 +7,10 @@ module.exports = batchHandler = async (date) => {
 
     let baseURL = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/{fileName}.csv'
 
+    console.log(date)
     let url = baseURL.replace('{fileName}', date)
     let json = await readURLAndGetJSON(url, date)
+
     // console.log(json[0])
     return json
 }
@@ -51,7 +53,7 @@ function dataPointAdapter(dataJSON, date) {
             recovered: el['Recovered'] || '0',
             active: el['Active'] || '0',
             combinedKey: el['Combined_Key'] || `${el['Province/State']}, ${el['Country/Region']}`,
-            date: moment.utc(date).endOf('day').format()  
+            date: moment.utc(date, 'MM-DD-YYYY').endOf('day').format()  
         }
     })
 
