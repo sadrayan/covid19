@@ -2,14 +2,19 @@ import React from 'react';
 import { Row, Col } from 'reactstrap';
 import HighchartsReact from 'highcharts-react-official'
 import Widget from '../../../../components/Widget/Widget';
-import Amplify, { API } from 'aws-amplify'
-import awsconfig from "../../../../aws-exports"
+import { API } from 'aws-amplify'
+import statsStyles from './ChartStyles'
+const moment = require('moment')
 
-Amplify.configure(awsconfig)
 
 var nf = new Intl.NumberFormat();
 
 class CaseTypeStat extends React.Component {
+
+  state = {
+    statsData: []
+  }
+
   options = {
     credits: {
       enabled: false
@@ -52,38 +57,97 @@ class CaseTypeStat extends React.Component {
     }
   };
 
-  async componentDidMount() {
-    let {countryFilter} = this.props
-    console.log('countryFilter', countryFilter)
-    const data = await API.get('covidapi', '/casePoint/totalStat')
+  getPercentageChange = (oldNumber, newNumber) => {
+    var decreaseValue = oldNumber - newNumber;
+    return -(decreaseValue / oldNumber) * 100;
+  }
 
+  // async componentDidMount() {
+  //   let statsData = await this.getStatData();
+  //   // hehreeeee
+  //   console.log('hereeeeeeeeee')
+  //   this.setState({ statsData: statsData })
+  //   return statsData
+  // }
 
+  async componentWillReceiveProps({props}) {
+    console.log('recieve propssss', this.props, this.state)
+    this.setState({...this.state, props})
+    let statsData = await this.getStatData();
+    // hehreeeee
+    
+    this.setState({ statsData: statsData })
+  }
+
+  async getStatData() {
+    let { countryFilter } = this.props;
+    console.log('countryFilter', countryFilter);
+    const result = await API.get('covidapi', `/casePoint/totalStat/${countryFilter === 'All' ? '' : countryFilter}`);
+    //
+    let statsData = [];
+    for (let type of ['confirmed', 'recovered', 'death']) {
+      let data = result.body.map(el => { return [moment(el.date).utc().format('YYYY-MM-DD'), el[type]]; });
+      // percentage change in last 2 days
+      let percentage = this.getPercentageChange(data[1][1], data[0][1]) || 0;
+      let total = nf.format(data[0][1]);
+      // reverse sort by oldest first
+      data.reverse();
+      statsData.push({
+        data: data,
+        name: type,
+        value: total,
+        percentage: Number(percentage).toFixed(2),
+        increase: percentage >= 0,
+        color: statsStyles[type]['backgroundColor'],
+        fillColor: {
+          linearGradient: {
+            x1: 0,
+            x2: 0,
+            y1: 0,
+            y2: 1
+          },
+          stops: [
+            [0, statsStyles[type]['backgroundColorLighter']],
+            [1, statsStyles[type]['backgroundColorFade']]
+          ]
+        },
+        type: 'areaspline',
+        fillOpacity: 1,
+        lineWidth: 2
+      });
+    }
+    return statsData;
   }
 
   render() {
 
-    // let { title, percentage, increase, data } = this.props;
-    // var total = data[0]['data'] ? data[0]['data'][data[0]['data'].length - 1][1] : 0
-
-    // title = <Row>
-    //   <Col xs={6}> <h5> {title} {nf.format(total)}</h5>
-    //     <div className="d-flex align-items-start h3">
-    //       <h6>{Number(percentage).toFixed(2)}%</h6>
-    //       <i className={`la la-arrow-right ml-sm text-${increase ? 'success' : 'danger'} 
-    //       rotate-${increase ? '315' : '45'}`} />
-    //     </div>
-    //   </Col>
-    // </Row>
+    // let { countryFilter } = this.props;
+    
+    // console.log('ssssssssss', countryFilter)
 
     return (
       <>
-        <Widget title={"title"}  style={{ marginBottom: '10px' }} removeMargin={true}>
-              {/* <HighchartsReact  options={{
-                ...this.options,
-                series: data
-              }} /> */}
-              hjhjhj
-        </Widget>
+        {this.state.statsData.map((stats, idx) => (
+          <Widget
+            style={{ marginBottom: '10px' }} 
+            removeMargin={true}
+            key={idx}
+            title={<Row>
+              <Col xs={6}> <h5> {stats.name} {stats.value}</h5>
+                <div className="d-flex align-items-start h3">
+                  <h6>{stats.percentage}%</h6>
+                  <i className={`la la-arrow-right ml-sm text-${stats.increase ? 'success' : 'danger'} 
+                rotate-${stats.increase ? '315' : '45'}`} />
+                </div>
+              </Col>
+            </Row>}
+          >
+            <HighchartsReact options={{
+              ...this.options,
+              series: [stats]
+            }} />
+          </Widget>
+        ))}
       </>
     );
   }

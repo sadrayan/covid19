@@ -63,6 +63,8 @@ class SmallStat extends React.Component {
       </Col>
     </Row>
 
+    // console.log(data)
+
     return (
       <>
         <Widget title={title}  style={{ marginBottom: '10px' }} removeMargin={true}>
