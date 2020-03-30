@@ -71,8 +71,10 @@ class CaseTypeStat extends React.Component {
 
     const result = await API.get('covidapi', `/casePoint/totalStat/${countryFilter === 'All' ? '' : countryFilter}`);
 
+    console.log(result.body, 'ssssssssssssssssssssssssssssssss')
+
     let statsData = [];
-    for (let type of ['confirmed', 'recovered', 'death']) {
+    for (let type of ['confirmed', 'recovered', 'deaths']) {
       let data = result.body.map(el => { return [moment(el.date).utc().format('YYYY-MM-DD'), el[type]]; });
       // percentage change in last 2 days
       let percentage = this.getPercentageChange(data[1][1], data[0][1]) || 0;

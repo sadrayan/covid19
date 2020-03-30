@@ -13,7 +13,7 @@
         borderColor: "rgb(23,198,113)",
         rgb: '#14b265'
     },
-    "death": {
+    "deaths": {
         backgroundColor: "rgba(255,65,105,1)",
         backgroundColorLighter: "rgba(255,65,105,0.8)",
         backgroundColorFade: "rgba(255,65,105,0)",

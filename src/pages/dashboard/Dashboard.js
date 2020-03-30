@@ -35,6 +35,7 @@ class Dashboard extends React.Component {
     this.statsElement = React.createRef()
     this.mapElement = React.createRef()
     this.overalMainChartElement = React.createRef()
+    this.overalPieChartElement = React.createRef()
   }
 
   async componentDidMount() {
@@ -58,6 +59,7 @@ class Dashboard extends React.Component {
   handleFilterUpdate = (event) => {
     this.statsElement.current.getStatData(event.value)
     this.overalMainChartElement.current.getStatData(event.value)
+    this.overalPieChartElement.current.getStatData(event.value)
     // this.mapElement.current.getMapData()
     this.setState({ countryFilter: event.value })
     
@@ -120,7 +122,7 @@ class Dashboard extends React.Component {
             <OveralMainChart ref={this.overalMainChartElement} />
           </Col>
           <Col lg={4} xs={12}>
-            <PieChart ref={this.overalPieChartElement} data={generatePieData(this.state.caseDataPoints, this.state.countryFilter)} />
+            <PieChart ref={this.overalPieChartElement}  />
           </Col>
         </Row>
 

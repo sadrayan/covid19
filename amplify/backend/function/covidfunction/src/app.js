@@ -53,7 +53,7 @@ app.get('/casePoint/totalStat', async (req, res) => {
       'date': '$__alias_0',
       'recovered': '$__alias_2',
       'active': '$__alias_3',
-      'death': '$__alias_4',
+      'deaths': '$__alias_4',
       '_id': 0
     }
   }, {
@@ -109,7 +109,7 @@ app.get('/casePoint/totalStat/:country', async (req, res) => {
       'date': '$__alias_0',
       'recovered': '$__alias_2',
       'active': '$__alias_3',
-      'death': '$__alias_4',
+      'deaths': '$__alias_4',
       '_id': 0
     }
   }, {

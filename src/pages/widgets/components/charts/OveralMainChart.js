@@ -19,7 +19,7 @@ export default class OveralMainChart extends React.PureComponent {
   async getStatData(countryFilter) {
     const result = await API.get('covidapi', `/casePoint/totalStat/${countryFilter === 'All' ? '' : countryFilter}`);
     let statsData = [];
-    for (let type of ['confirmed', 'recovered', 'death']) {
+    for (let type of ['confirmed', 'recovered', 'deaths']) {
       let data = result.body.map(el => { return [moment(el.date).utc().format('YYYY-MM-DD'), el[type]]; });
       // reverse sort by oldest first
       data.reverse();
