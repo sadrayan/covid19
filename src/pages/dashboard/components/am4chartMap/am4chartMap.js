@@ -23,7 +23,7 @@ class Am4chartMap extends Component {
 
     map.zoomControl = new am4maps.ZoomControl();
     map.zoomControl.layout = 'horizontal';
-    map.zoomControl.align = 'left';
+    map.zoomControl.align = 'right';
     map.zoomControl.valign = 'bottom';
     map.zoomControl.dy = -10;
     map.zoomControl.contentHeight = 20;
