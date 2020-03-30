@@ -22,9 +22,11 @@ export default class CountryCompareChart extends PureComponent {
 
   async componentDidMount() {
     await this.getCountryChartData()
-
   }
 
+  /**
+   * called on ComponentDidMount and eath setState event. 
+   */
   async getCountryChartData() {
     let countryList = [this.state.countryFromFilter, this.state.countryToFilter]
     let series = []
@@ -34,11 +36,10 @@ export default class CountryCompareChart extends PureComponent {
 
     for (let country of countryList) {
       const result = await API.get('covidapi', `/casePoint/totalStat/${country}`);
-      // console.log(result.body)
+
       let caseCountry = result.body.map(el => { return [country, el[this.state.selectedType]] })
       caseCountry = caseCountry.slice(0, 15).reverse() // choose top most infected regions
 
-      console.log(caseCountry)
       countryColor.push(colorsPallete.shift())
       categories.push(result.body.map(el => moment(el.date).utc().format('YYYY-MM-DD')).slice(0,15).reverse())
 
