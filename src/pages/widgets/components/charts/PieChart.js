@@ -17,7 +17,7 @@ class PieChart extends Component {
     async getStatData(countryFilter) {
 
         // const { data } = this.props;
-        let result = await API.get('covidapi', '/casePoint/overviewStats')
+        const result = await API.get('covidapi', `/casePoint/totalStat/${countryFilter === 'All' ? '' : countryFilter}`);
 
         let pieData = {
             data: [],
