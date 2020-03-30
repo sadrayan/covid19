@@ -31,12 +31,15 @@ class Dashboard extends React.Component {
       selectCountryData: [{ value: 'All', label: 'All' }],
       countryFilter: 'All'
     };
+
+    this.statsElement = React.createRef()
+    this.mapElement = React.createRef()
   }
 
   async componentDidMount() {
     // await getDataPoints()
 
-    const data = await API.get('covidapi', '/casePoint/totalStat')
+    // const data = await API.get('covidapi', '/casePoint/totalStat')
 
     const selectCountryResult = await API.get('covidapi', '/casePoint/overviewStats')
     // console.log(selectCountryResult.body)
@@ -44,7 +47,6 @@ class Dashboard extends React.Component {
       return { value: el.country, label: `${el.country}  ${nf.format(el.confirmed)}` }
     })
     selectCountryData.unshift({ value: 'All', label: 'All' })
-    // console.log(selectCountryData)
 
     let caseDataPoints = await getLatestData()
 
@@ -52,7 +54,12 @@ class Dashboard extends React.Component {
   }
 
 
-  handleFilterUpdate = (event) => { this.setState({ countryFilter: event.value }); }
+  handleFilterUpdate = (event) => {
+    this.statsElement.current.getStatData( event.value)
+    // this.mapElement.current.getMapData()
+    this.setState({ countryFilter: event.value })
+    
+  }
 
   render() {
     return (
@@ -71,7 +78,7 @@ class Dashboard extends React.Component {
           <Col lg={1} />
           <Col lg={7}>
             <Widget className="bg-transparent">
-              <Map caseDataPoints={applyFilter(this.state.caseDataPoints, this.state.countryFilter)} />
+              <Map ref={this.mapElement} caseDataPoints={applyFilter(this.state.caseDataPoints, this.state.countryFilter)} />
             </Widget>
           </Col>
 
@@ -89,32 +96,23 @@ class Dashboard extends React.Component {
               </Col>
             </FormGroup>
 
-            {/* {generateData(this.state.caseDataPoints, this.state.countryFilter).map((stats, idx) => (
-              <SmallStat key={idx}
-                title={stats['name']}
-                data={[stats]}
-                percentage={stats.percentage}
-                increase={stats.increase} 
-                countryFilter={this.state.countryFilter}
-                />
-            ))} */}
-            <CaseTypeStat countryFilter={this.state.countryFilter} />
+            <CaseTypeStat ref={this.statsElement} />
 
           </Col>
         </Row>
 
 
-        {/* <Row >
+        <Row >
           <Col lg={1} />
           <Col lg={6} xs={12}>
-            <CountryCompareChart data={this.state.caseDataPoints} selectCountryData={this.state.selectCountryData} />
+            <CountryCompareChart selectCountryData={this.state.selectCountryData} />
           </Col>
           <Col lg={4} xs={12} >
-            <CaseCountryPieChart data={this.state.caseDataPoints} />
+            <CaseCountryPieChart  />
           </Col>
         </Row>
 
-        <Row>
+        {/* <Row>
           <Col lg={1} />
           <Col lg={6} xs={12}>
             <OveralMainChart data={generateData(this.state.caseDataPoints, this.state.countryFilter)} />

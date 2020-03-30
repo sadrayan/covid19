@@ -62,28 +62,15 @@ class CaseTypeStat extends React.Component {
     return -(decreaseValue / oldNumber) * 100;
   }
 
-  // async componentDidMount() {
-  //   let statsData = await this.getStatData();
-  //   // hehreeeee
-  //   console.log('hereeeeeeeeee')
-  //   this.setState({ statsData: statsData })
-  //   return statsData
-  // }
-
-  async componentWillReceiveProps({props}) {
-    console.log('recieve propssss', this.props, this.state)
-    this.setState({...this.state, props})
-    let statsData = await this.getStatData();
-    // hehreeeee
-    
-    this.setState({ statsData: statsData })
+  async componentDidMount() {
+    // call first time with All
+    await this.getStatData('All');
   }
 
-  async getStatData() {
-    let { countryFilter } = this.props;
-    console.log('countryFilter', countryFilter);
+  async getStatData(countryFilter) {
+
     const result = await API.get('covidapi', `/casePoint/totalStat/${countryFilter === 'All' ? '' : countryFilter}`);
-    //
+
     let statsData = [];
     for (let type of ['confirmed', 'recovered', 'death']) {
       let data = result.body.map(el => { return [moment(el.date).utc().format('YYYY-MM-DD'), el[type]]; });
@@ -116,20 +103,16 @@ class CaseTypeStat extends React.Component {
         lineWidth: 2
       });
     }
-    return statsData;
+
+    this.setState({ statsData: statsData })
   }
 
   render() {
-
-    // let { countryFilter } = this.props;
-    
-    // console.log('ssssssssss', countryFilter)
-
     return (
       <>
         {this.state.statsData.map((stats, idx) => (
           <Widget
-            style={{ marginBottom: '10px' }} 
+            style={{ marginBottom: '10px' }}
             removeMargin={true}
             key={idx}
             title={<Row>
