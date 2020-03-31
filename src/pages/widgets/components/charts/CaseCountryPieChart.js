@@ -1,65 +1,36 @@
 import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
 import Widget from "../../../../components/Widget/Widget";
 import HighchartsReact from 'highcharts-react-official'
 import Highcharts from 'highcharts';
 import variablePie from 'highcharts/modules/variable-pie';
 import config from '../config.js';
+import { API } from 'aws-amplify'
 const colors = config.chartColors;
 
 variablePie(Highcharts);
 
 export default class CaseCountryPieChart extends PureComponent {
 
-  constructor(props) {
-    super(props);
-    this.state = {};
+  state = {
+    pie: { title: false, }
   }
-  static propTypes = {
-    data: PropTypes.any.isRequired,
-    isReceiving: PropTypes.bool
-  };
 
-  static defaultProps = {
-    data: [],
-    isReceiving: false
-  };
-
-  handleChange = (event) => {
-    this.setState({ selectedType: event.target.value });
-  };
-
-  getCountryChartData() {
+  async componentDidMount() {
     let series = []
-    let caseDataPoints = this.props.data
 
-    if (caseDataPoints['Confirmed']) {
-      let confirmedDataPoints = caseDataPoints['Confirmed']
-      let caseCountry = new Map()
+    let caseCountry = await API.get('covidapi', '/casePoint/overviewStats')
 
-      let sortedDates = Object.keys(confirmedDataPoints[0]['dataPoints']).sort((a, b) => a - b);
-      let lastDate = sortedDates.pop()
-      confirmedDataPoints.forEach(el => {
-        if (caseCountry.has(el['countryRegion']))
-          caseCountry.set(el['countryRegion'], caseCountry.get(el['countryRegion']) + el['dataPoints'][lastDate])
-        else
-          caseCountry.set(el['countryRegion'], el['dataPoints'][lastDate])
-      })
-      // sort by case confirmed
-      caseCountry = Array.from([...caseCountry.entries()].sort((a, b) => b[1] - a[1]));
-      caseCountry = caseCountry.slice(0, 10) // choose top most infected regions
+    caseCountry = caseCountry.body.map(el => { return [el.country, el.confirmed] })
+    caseCountry = caseCountry.slice(0, 10) // choose top most infected regions
+    let total = caseCountry.reduce((cnt, a) => cnt + a[1], 0)
 
-      let total = caseCountry.reduce((cnt, a) => cnt + a[1], 0)
-
-      caseCountry.forEach(el => {
-        series.push({
-          name: el[0],
-          y: total,
-          z: el[1]
-        })
-      })
-
-    }
+    series = caseCountry.map(el => {
+      return {
+        name: el[0],
+        y: total,
+        z: el[1]
+      }
+    })
 
     let pie = {
       credits: {
@@ -102,18 +73,17 @@ export default class CaseCountryPieChart extends PureComponent {
       }]
     }
 
-    return pie
+    this.setState({ pie: pie })
   }
 
 
   render() {
-
     return (
-      <Widget 
+      <Widget
         title={<h5>Top <span className="fw-semi-bold">10 Impacted Countries</span></h5>}
         close collapse
       >
-        <HighchartsReact  options={this.getCountryChartData()} />
+        <HighchartsReact options={this.state.pie} />
       </Widget>
     );
   }

@@ -2,14 +2,35 @@ import React, { Component } from 'react';
 
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4maps from "@amcharts/amcharts4/maps";
-import getMapData from './MapData';
 import am4geodata_worldLow from "@amcharts/amcharts4-geodata/worldLow";
-
 import s from './am4chartMap.module.scss';
+import Widget from '../../../../components/Widget';
+
+import { API } from 'aws-amplify'
+
+var nf = new Intl.NumberFormat();
 
 class Am4chartMap extends Component {
+  constructor(props) {
+    super(props);
 
-  componentDidUpdate() {
+    this.state = {
+      mapData: [],
+      caseDataPoints: []
+    }
+
+  }
+
+  async componentDidMount() {
+
+    // fetch from DB - data is in geopoint format
+    const result = await API.get('covidapi', '/casePoint/mapCasePoint');
+    this.setState({ caseDataPoints: result.body })
+
+    // transform map data
+    this.getMapData('All')
+
+    am4core.disposeAllCharts();
     let map = am4core.create("map", am4maps.MapChart);
     map.geodata = am4geodata_worldLow;
     map.percentHeight = 90;
@@ -23,7 +44,7 @@ class Am4chartMap extends Component {
 
     map.zoomControl = new am4maps.ZoomControl();
     map.zoomControl.layout = 'horizontal';
-    map.zoomControl.align = 'left';
+    map.zoomControl.align = 'right';
     map.zoomControl.valign = 'bottom';
     map.zoomControl.dy = -10;
     map.zoomControl.contentHeight = 20;
@@ -55,11 +76,27 @@ class Am4chartMap extends Component {
     let hs = polygonTemplate.states.create("hover");
     hs.properties.fill = am4core.color("#354D84");
 
-    let citySeries = map.series.push(new am4maps.MapImageSeries());
-    citySeries.data = getMapData(this.props.caseDataPoints);
+    this.setState({ map: map })
+  }
+
+
+  componentDidUpdate() {
+
+    // first time around map is not ready, pass
+    if (!this.state.map)
+      return
+
+    // to remove the plotted points and render country filter
+    if (this.state.map.series.length > 1) {
+      this.state.map.series.removeIndex(1).dispose();
+      console.log('remmoving')
+    }
+
+    let citySeries = this.state.map.series.push(new am4maps.MapImageSeries());
+    citySeries.data = this.state.mapData
     citySeries.dataFields.value = "size";
 
-    
+
     let cityTemplate = citySeries.mapImages.template;
     cityTemplate.nonScaling = true;
     cityTemplate.propertyFields.latitude = "latitude";
@@ -78,7 +115,7 @@ class Am4chartMap extends Component {
     circle.tooltipText = '{tooltip}';
     circle.propertyFields.radius = 'size';
 
-    this.map = map;
+    this.map = this.state.map;
   }
 
   componentWillUnmount() {
@@ -87,13 +124,36 @@ class Am4chartMap extends Component {
     }
   }
 
+  getMapData(countryFilter) {
+    let { caseDataPoints } = this.state
+    // for performance, only show geo points with 10 or more confirmed cases
+    caseDataPoints = caseDataPoints.filter(el => el.intensity >= 10)
+
+    if (countryFilter !== 'All')
+      caseDataPoints = caseDataPoints.filter(el => el.countryRegion === countryFilter)
+
+    let mapData = caseDataPoints.map(casePoint => {
+      return {
+        longitude: parseFloat(casePoint.geopoint.coordinates[0]),
+        latitude: parseFloat(casePoint.geopoint.coordinates[1]),
+        size: Math.max(0.5, Math.log(casePoint.intensity) * Math.LN10 / 10) * 3,
+        tooltip: `${casePoint.combinedKey} ${nf.format(casePoint.intensity)}`,
+      }
+    })
+
+    this.setState({ mapData: mapData })
+    return mapData
+  }
+
   render() {
     return (
-      <div className={s.mapChart}>
-        <div className={s.map} id="map">
-          <span>Alternative content for the map</span>
+      <Widget className="bg-transparent">
+        <div className={s.mapChart}>
+          <div className={s.map} id="map">
+            <span>Loading content for the map</span>
+          </div>
         </div>
-      </div>
+      </Widget>
     );
   }
 }

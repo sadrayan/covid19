@@ -1,39 +1,53 @@
-import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
+import React from 'react';
 import { Row, Col } from "reactstrap";
 import Widget from "../../../../components/Widget/Widget";
 import HighchartsReact from 'highcharts-react-official'
-
+import statsStyles from './ChartStyles'
+import { API } from 'aws-amplify'
+const moment = require('moment')
 var nf = new Intl.NumberFormat();
 
-export default class OveralMainChart extends PureComponent {
+export default class OveralMainChart extends React.PureComponent {
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      
-    };
+  state = {}
+
+  async componentDidMount() {
+    // call first time with All
+    await this.getStatData('All');
   }
 
-  static propTypes = {
-    data: PropTypes.any.isRequired,
-    isReceiving: PropTypes.bool
-  };
+  async getStatData(countryFilter) {
+    const result = await API.get('covidapi', `/casePoint/totalStat/${countryFilter === 'All' ? '' : countryFilter}`);
+    let statsData = [];
+    for (let type of ['confirmed', 'recovered', 'deaths']) {
+      let data = result.body.map(el => { return [moment(el.date).utc().format('YYYY-MM-DD'), el[type]]; });
+      // reverse sort by oldest first
+      data.reverse();
 
-  static defaultProps = {
-    data: [],
-    isReceiving: false
-  };
-
-  chartData = () => {
-    
-    let firstDate;
-    this.props['data'][0] ? firstDate = new Date(this.props['data'][0]['data'][0][0]).getTime() : firstDate = new Date("2020-01-22").getTime()
-    this.chartOptions['plotOptions']['series']['pointStart'] = firstDate
-    return {
-      ...this.chartOptions,
-      series: this.props['data']
+      statsData.push({
+        data: data,
+        name: type,
+        color: statsStyles[type]['backgroundColor'],
+        fillColor: {
+          linearGradient: {
+            x1: 0,
+            x2: 0,
+            y1: 0,
+            y2: 1
+          },
+          stops: [
+            [0, statsStyles[type]['backgroundColorLighter']],
+            [1, statsStyles[type]['backgroundColorFade']]
+          ]
+        },
+        type: 'areaspline',
+        fillOpacity: 1,
+        lineWidth: 2
+      });
     }
+    this.chartOptions['plotOptions']['series']['pointStart'] = moment.utc('2020-01-22').valueOf()
+
+    this.setState({ statsData: statsData })
   }
 
   chartOptions = {
@@ -83,8 +97,8 @@ export default class OveralMainChart extends PureComponent {
           enabled: false,
           symbol: 'circle'
         },
-        pointInterval: 3600000 * 25, // every day
         pointStart: null,
+        pointInterval: 24 * 3600 * 1000, // one day
         tooltip: {
           pointFormatter() {
             return `<span style="color: ${this.color}">${this.series.name} at ${nf.format(this.y)}</span>`;
@@ -95,13 +109,11 @@ export default class OveralMainChart extends PureComponent {
   };
 
   render() {
-
-    const { isReceiving } = this.state;
     return (
       <Widget
         bodyClass="mt"
         className="mb-xlg"
-        fetchingData={isReceiving}
+        style={{ textTransform : 'capitalize'}}
         collapse
         close
         title={
@@ -112,12 +124,15 @@ export default class OveralMainChart extends PureComponent {
               </h5>
             </Col>
             <Col xs={12} sm={7}>
-              <div className="chart-legend"/>
+              <div className="chart-legend" />
             </Col>
           </Row>
         }
       >
-       <HighchartsReact options={this.chartData()} />
+        <HighchartsReact options={{
+          ...this.chartOptions,
+          series: this.state.statsData
+        }} />
       </Widget>
     );
   }

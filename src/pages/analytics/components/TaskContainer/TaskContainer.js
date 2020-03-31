@@ -16,7 +16,7 @@ export default class TasksContainer extends Component {
     ).isRequired,
   }
 
-  componentWillMount() {
+  componentDidMount() {
     const tasks = this.props.data;
 
     tasks.map((task) => {
