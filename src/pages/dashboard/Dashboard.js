@@ -1,11 +1,6 @@
 import React from 'react';
 import { Row, Col, FormGroup } from 'reactstrap';
 import Select from 'react-select';
-import Widget from '../../components/Widget';
-
-import Map from './components/am4chartMap/am4chartMap';
-import { getLatestData, getCountryList, generateData, generatePieData, applyFilter } from './DataProcess'
-import SmallStat from '../widgets/components/charts/SmallStat';
 
 import s from './Dashboard.module.scss';
 import formStyle from '../forms/elements/Elements.module.scss'
@@ -13,15 +8,16 @@ import OveralMainChart from '../widgets/components/charts/OveralMainChart';
 import PieChart from '../widgets/components/charts/PieChart';
 import CountryCompareChart from '../widgets/components/charts/CountryCompareChart';
 import CaseCountryPieChart from '../widgets/components/charts/CaseCountryPieChart';
+import CaseTypeStat from '../widgets/components/charts/CaseTypeStats';
+import Map from './components/am4chartMap/am4chartMap';
 
 import Amplify, { API } from 'aws-amplify'
 import awsconfig from "../../aws-exports"
-import CaseTypeStat from '../widgets/components/charts/CaseTypeStats';
 
 Amplify.configure(awsconfig)
 
 var nf = new Intl.NumberFormat();
-
+const moment = require('moment')
 
 class Dashboard extends React.Component {
 
@@ -39,20 +35,14 @@ class Dashboard extends React.Component {
   }
 
   async componentDidMount() {
-    // await getDataPoints()
-
-    // const data = await API.get('covidapi', '/casePoint/totalStat')
-
     const selectCountryResult = await API.get('covidapi', '/casePoint/overviewStats')
-    // console.log(selectCountryResult.body)
+
     let selectCountryData = selectCountryResult.body.map(el => {
       return { value: el.country, label: `${el.country}  ${nf.format(el.confirmed)}` }
     })
     selectCountryData.unshift({ value: 'All', label: 'All' })
 
-    let caseDataPoints = await getLatestData()
-
-    this.setState({ caseDataPoints: caseDataPoints, selectCountryData: selectCountryData })
+    this.setState({ selectCountryData: selectCountryData })
   }
 
 
@@ -60,7 +50,7 @@ class Dashboard extends React.Component {
     this.statsElement.current.getStatData(event.value)
     this.overalMainChartElement.current.getStatData(event.value)
     this.overalPieChartElement.current.getStatData(event.value)
-    // this.mapElement.current.getMapData()
+    this.mapElement.current.getMapData(event.value)
     this.setState({ countryFilter: event.value })
     
   }
@@ -74,16 +64,14 @@ class Dashboard extends React.Component {
             <h1 className="page-title">COVID19Watch<small>.info</small> </h1>
           </Col>
           <Col xl={3} lg={3} md={6} xs={12}>
-            <h2 className="page-title" style={{ textAlign: 'center' }} ><small><small>{new Date().toUTCString()}</small></small>  </h2>
+            <h2 className="page-title" style={{ textAlign: 'center' }} ><small><small>{moment.utc().format('llll') } GMT</small></small>  </h2>
           </Col>
         </Row>
 
         <Row>
           <Col lg={1} />
           <Col lg={7}>
-            <Widget className="bg-transparent">
-              <Map ref={this.mapElement} caseDataPoints={applyFilter(this.state.caseDataPoints, this.state.countryFilter)} />
-            </Widget>
+                <Map ref={this.mapElement} />
           </Col>
 
           <Col xl={3} lg={3} md={6} xs={12} >

@@ -205,6 +205,108 @@ app.get('/casePoint/overviewStats', async (req, res) => {
   res.json(result)
 });
 
+app.get('/casePoint/mapCasePoint', async function (req, res) {
+  var lastDate = await DBHelper.getLatestDay()
+  let query = 
+    [
+      {
+        '$match': {
+          '$expr': {
+            '$and': [
+              {
+                '$cond': [
+                  {
+                    '$not': {
+                      '$isArray': [
+                        '$date'
+                      ]
+                    }
+                  }, {
+                    '$gte': [
+                      '$date', {
+                        '$dateFromString': {
+                          'dateString': lastDate, 
+                          'timezone': 'UTC'
+                        }
+                      }
+                    ]
+                  }, {
+                    '$reduce': {
+                      'input': '$date', 
+                      'initialValue': false, 
+                      'in': {
+                        '$or': [
+                          '$$value', {
+                            '$gte': [
+                              '$$this', {
+                                '$dateFromString': {
+                                  'dateString': lastDate, 
+                                  'timezone': 'UTC'
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }, true
+            ]
+          }
+        }
+      }, {
+        '$project': {
+          '__alias_0': '$confirmed', 
+          '__alias_1': '$lat', 
+          '__alias_2': '$lat', 
+          '__alias_3': '$long', 
+          '__alias_4': '$countryRegion', 
+          '__aliast_5': '$combinedKey'
+        }
+      }, {
+        '$project': {
+          'intensity': '$__alias_0', 
+          'geopoint': '$__alias_1', 
+          'latitude': '$__alias_2', 
+          'longitude': '$__alias_3', 
+          'countryRegion': '$__alias_4', 
+          'combinedKey': '$__aliast_5', 
+          '_id': 0
+        }
+      }, {
+        '$addFields': {
+          'geopoint': {
+            'type': 'Point', 
+            'coordinates': [
+              '$longitude', '$latitude'
+            ]
+          }
+        }
+      }, {
+        '$project': {
+          'latitude': false, 
+          'longitude': false
+        }
+      }, {
+        '$match': {
+          'geopoint.type': 'Point', 
+          'geopoint.coordinates': {
+            '$type': 'array'
+          }, 
+          'geopoint.coordinates.0': {
+            '$type': 'number'
+          }, 
+          'geopoint.coordinates.1': {
+            '$type': 'number'
+          }
+        }
+      }
+    ]
+
+    let result = await DBHelper.executeAggregate(query)
+    res.json(result)
+}) 
 
 
 /****************************

@@ -15,7 +15,7 @@ class PieChart extends Component {
     }
   
     async getStatData(countryFilter) {
-        
+
         const result = await API.get('covidapi', `/casePoint/totalStat/${countryFilter === 'All' ? '' : countryFilter}`);
 
         let pieData = {
@@ -36,8 +36,6 @@ class PieChart extends Component {
             pieData['labels'].push(type)
 
         }
-
-        console.log(result.body)
     
         let statsData = {
             credits: {
@@ -89,6 +87,7 @@ class PieChart extends Component {
         return (
             <Widget
                 title={<h5>To date <span className="fw-semi-bold">Cases</span></h5>}
+                style={{ textTransform : 'capitalize'}}
                 close collapse
             >
                 <HighchartsReact options={this.state.statsData} />

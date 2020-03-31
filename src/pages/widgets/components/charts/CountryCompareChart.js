@@ -117,7 +117,7 @@ export default class CountryCompareChart extends PureComponent {
         close collapse
       >
 
-        <Row md="12" className="justify-content-center">
+        <Row md="12" className="justify-content-center" style={{ textTransform : 'capitalize'}}>
           <FormGroup size='sm' style={{ marginLeft: '10px' }} className="radio abc-radio">
             <Input type="radio" id="radio1" name="radio1" value="confirmed" defaultChecked 
             onChange={(event) => {  this.setState({ selectedType: event.target.value }, this.getCountryChartData) }} />

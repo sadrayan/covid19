@@ -45,9 +45,7 @@ export default class OveralMainChart extends React.PureComponent {
         lineWidth: 2
       });
     }
-
     this.chartOptions['plotOptions']['series']['pointStart'] = moment.utc('2020-01-22').valueOf()
-    console.log(statsData[0]['data'][0])
 
     this.setState({ statsData: statsData })
   }
@@ -115,6 +113,7 @@ export default class OveralMainChart extends React.PureComponent {
       <Widget
         bodyClass="mt"
         className="mb-xlg"
+        style={{ textTransform : 'capitalize'}}
         collapse
         close
         title={

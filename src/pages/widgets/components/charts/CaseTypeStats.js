@@ -71,8 +71,6 @@ class CaseTypeStat extends React.Component {
 
     const result = await API.get('covidapi', `/casePoint/totalStat/${countryFilter === 'All' ? '' : countryFilter}`);
 
-    console.log(result.body, 'ssssssssssssssssssssssssssssssss')
-
     let statsData = [];
     for (let type of ['confirmed', 'recovered', 'deaths']) {
       let data = result.body.map(el => { return [moment(el.date).utc().format('YYYY-MM-DD'), el[type]]; });
@@ -114,7 +112,7 @@ class CaseTypeStat extends React.Component {
       <>
         {this.state.statsData.map((stats, idx) => (
           <Widget
-            style={{ marginBottom: '10px' }}
+            style={{ marginBottom: '10px', textTransform : 'capitalize' }}
             removeMargin={true}
             key={idx}
             title={<Row>
