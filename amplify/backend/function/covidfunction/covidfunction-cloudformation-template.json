@@ -62,7 +62,7 @@
 				"Runtime": "nodejs10.x",
 				"Timeout": "25",
 				"Code": {
-					"S3Bucket": "amplify-covid19watchinfo-dev-223918-deployment",
+					"S3Bucket": "amplify-covid19watchinfo-prod-12637-deployment",
 					"S3Key": "amplify-builds/covidfunction-6270342f384a47626837-build.zip"
 				}
 			}
