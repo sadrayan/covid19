@@ -99,7 +99,6 @@ export function generateData(caseDataPoints, filter) {
         let data = []
         let sortedDates = Object.keys(caseDataPoints[key][0]['dataPoints']).sort((a, b) => a - b);
 
-
         sortedDates.forEach(caseDate => {
             let totalPerDay = caseDataPoints[key].map(datapoint => datapoint['dataPoints'][caseDate])
             data.push([caseDate, parseInt(totalPerDay.reduce((a, b) => a + b))])
@@ -160,83 +159,4 @@ export function generatePieData(caseDataPoints, filter) {
     }
 
     return pieData
-}
-
-export function transformStats(caseDataPoints, filter) {
-
-    applyFilter(caseDataPoints, filter)
-    // console.log(caseDataPoints)
-
-
-    let smallStats = []
-    let chartData = {
-        labels: [],
-        datasets: []
-    }
-    let pieData = {
-        datasets: [{
-            hoverBorderColor: "#ffffff",
-            data: [],
-            backgroundColor: [],
-            borderColor: []
-        }],
-        labels: Object.keys(caseDataPoints)
-    }
-
-    for (let key in caseDataPoints) {
-        let data = []
-        let sortedDates = Object.keys(caseDataPoints[key][0]['dataPoints']).sort((a, b) => a - b);
-
-
-        sortedDates.forEach(caseDate => {
-            let totalPerDay = caseDataPoints[key].map(datapoint => datapoint['dataPoints'][caseDate])
-            data.push(totalPerDay.reduce((a, b) => a + b))
-        })
-
-        let percentage = getPercentageChange(data[data.length - 2], data[data.length - 1])
-        smallStats.push({
-            label: key,
-            value: nf.format(data[data.length - 1]),
-            percentage: `${nf.format(percentage)}%`,
-            increase: percentage >= 0,
-            decrease: percentage < 0,
-            chartLabels: sortedDates,
-            attrs: {
-                md: "4",
-                sm: "6"
-            },
-            datasets: [{
-                label: key,
-                fill: "start",
-                borderWidth: 1.5,
-                backgroundColor: this.statsStyles[key]['backgroundColor'],
-                borderColor: this.statsStyles[key]['borderColor'],
-                data
-            }]
-        })
-
-        chartData['labels'] = sortedDates.map(el => new Date(el).toLocaleDateString("en-US"))
-        chartData['datasets'].push({
-            label: key,
-            fill: "start",
-            data: data,
-            backgroundColor: this.statsStyles[key]['backgroundColor'],
-            borderColor: this.statsStyles[key]['borderColor'],
-            pointBackgroundColor: "#ffffff",
-            pointHoverBackgroundColor: this.statsStyles[key]['borderColor'],
-            borderWidth: 1.5,
-            pointRadius: 0,
-            pointHoverRadius: 3
-        })
-
-        pieData['datasets'][0]['data'].push(data[data.length - 1])
-        pieData['datasets'][0]['backgroundColor'].push(this.statsStyles[key]['backgroundColorDarker'])
-
-    }
-
-    this.setState({
-        smallStats: smallStats,
-        chartData: chartData,
-        pieData: pieData
-    })
 }

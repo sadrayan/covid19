@@ -11,5 +11,23 @@
             "StackId": "arn:aws:cloudformation:us-east-1:575711874019:stack/amplify-covid19watchinfo-dev-223918/55dc6a20-6be6-11ea-adfe-1225390e8313",
             "AmplifyAppId": "d1fpzhsloc6yxm"
         }
+    },
+    "prod": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-covid19watchinfo-prod-12637-authRole",
+            "UnauthRoleArn": "arn:aws:iam::575711874019:role/amplify-covid19watchinfo-prod-12637-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::575711874019:role/amplify-covid19watchinfo-prod-12637-authRole",
+            "Region": "us-east-1",
+            "DeploymentBucketName": "amplify-covid19watchinfo-prod-12637-deployment",
+            "UnauthRoleName": "amplify-covid19watchinfo-prod-12637-unauthRole",
+            "StackName": "amplify-covid19watchinfo-prod-12637",
+            "StackId": "arn:aws:cloudformation:us-east-1:575711874019:stack/amplify-covid19watchinfo-prod-12637/33c87e70-7310-11ea-a2ca-1272d872aba7",
+            "AmplifyAppId": "d1fpzhsloc6yxm"
+        },
+        "categories": {
+            "function": {
+                "covidfunction": {}
+            }
+        }
     }
 }
