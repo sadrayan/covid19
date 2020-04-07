@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const moment = require('moment')
 const CaseDataPoint = require('./models/CaseDataPoint')
+const Forecast = require('./models/Forecast')
 const BatchProcess = require('./models/BatchProcess')
 
 require('dotenv').config({
@@ -39,7 +40,6 @@ exports.getLastBatchProcess = async () => {
         let result = await BatchProcess.find().sort({
             reportDate: -1
         })
-        // console.log(result)
         return result
     } catch (error) {
         console.log('something bad happened', error)
@@ -56,12 +56,50 @@ exports.getLastBatchProcess = async () => {
 exports.executeAggregate = async (query) => {
     try {
         let result = await CaseDataPoint.aggregate(query).exec();
+        
         return {
             statusCode: 200,
             body: result
         }
     } catch (error) {
         console.log('something bad happened', error);
+        return {
+            statusCode: error.statusCode || 500,
+            headers: {
+                'Content-Type': 'text/plain'
+            },
+            body: 'Could not create the caseDataPoint.'
+        }
+    }
+}
+
+exports.executeForecastAggregate = async (query) => {
+    try {
+        let result = await Forecast.aggregate(query).exec();
+        return {
+            statusCode: 200,
+            body: result
+        }
+    } catch (error) {
+        console.log('something bad happened', error);
+        return {
+            statusCode: error.statusCode || 500,
+            headers: {
+                'Content-Type': 'text/plain'
+            },
+            body: 'Could not create the forecasts.'
+        }
+    }
+}
+
+exports.getLatestForecastDay = async () => {
+    try {
+        let result = await Forecast.find().sort({
+            date: -1
+        }).limit(1)
+        return moment.utc(result[0].date).startOf('day').format('YYYY-MM-DDTHH:mm:ss')
+    } catch (error) {
+        console.log('something bad happened', error)
         return {
             statusCode: error.statusCode || 500,
             headers: {

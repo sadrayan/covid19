@@ -5,7 +5,7 @@ var region = process.env.REGION
 
 Amplify Params - DO NOT EDIT */
 
-const DBHelper = require('./dbHelper') 
+const DBHelper = require('./dbHelper')
 
 var express = require('express')
 var bodyParser = require('body-parser')
@@ -75,15 +75,15 @@ app.get('/casePoint/totalStat', async (req, res) => {
 app.get('/casePoint/totalStat/:country', async (req, res) => {
 
   let country = req.params.country
-  const query = [ {
-      "$match": {
-        "countryRegion": {
-          "$in": [
-            country
-          ]
-        }
+  const query = [{
+    "$match": {
+      "countryRegion": {
+        "$in": [
+          country
+        ]
       }
-    },{
+    }
+  }, {
     '$group': {
       '_id': {
         '__alias_0': '$date'
@@ -214,106 +214,99 @@ app.get('/casePoint/overviewStats', async (req, res) => {
 
 app.get('/casePoint/mapCasePoint', async function (req, res) {
   var lastDate = await DBHelper.getLatestDay()
-  let query = 
-    [
-      {
-        '$match': {
-          '$expr': {
-            '$and': [
-              {
-                '$cond': [
-                  {
-                    '$not': {
-                      '$isArray': [
-                        '$date'
-                      ]
-                    }
-                  }, {
+  let query = [{
+    '$match': {
+      '$expr': {
+        '$and': [{
+          '$cond': [{
+            '$not': {
+              '$isArray': [
+                '$date'
+              ]
+            }
+          }, {
+            '$gte': [
+              '$date', {
+                '$dateFromString': {
+                  'dateString': lastDate,
+                  'timezone': 'UTC'
+                }
+              }
+            ]
+          }, {
+            '$reduce': {
+              'input': '$date',
+              'initialValue': false,
+              'in': {
+                '$or': [
+                  '$$value', {
                     '$gte': [
-                      '$date', {
+                      '$$this', {
                         '$dateFromString': {
-                          'dateString': lastDate, 
+                          'dateString': lastDate,
                           'timezone': 'UTC'
                         }
                       }
                     ]
-                  }, {
-                    '$reduce': {
-                      'input': '$date', 
-                      'initialValue': false, 
-                      'in': {
-                        '$or': [
-                          '$$value', {
-                            '$gte': [
-                              '$$this', {
-                                '$dateFromString': {
-                                  'dateString': lastDate, 
-                                  'timezone': 'UTC'
-                                }
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    }
                   }
                 ]
-              }, true
-            ]
-          }
-        }
-      }, {
-        '$project': {
-          '__alias_0': '$confirmed', 
-          '__alias_1': '$lat', 
-          '__alias_2': '$lat', 
-          '__alias_3': '$long', 
-          '__alias_4': '$countryRegion', 
-          '__aliast_5': '$combinedKey'
-        }
-      }, {
-        '$project': {
-          'intensity': '$__alias_0', 
-          'geopoint': '$__alias_1', 
-          'latitude': '$__alias_2', 
-          'longitude': '$__alias_3', 
-          'countryRegion': '$__alias_4', 
-          'combinedKey': '$__aliast_5', 
-          '_id': 0
-        }
-      }, {
-        '$addFields': {
-          'geopoint': {
-            'type': 'Point', 
-            'coordinates': [
-              '$longitude', '$latitude'
-            ]
-          }
-        }
-      }, {
-        '$project': {
-          'latitude': false, 
-          'longitude': false
-        }
-      }, {
-        '$match': {
-          'geopoint.type': 'Point', 
-          'geopoint.coordinates': {
-            '$type': 'array'
-          }, 
-          'geopoint.coordinates.0': {
-            '$type': 'number'
-          }, 
-          'geopoint.coordinates.1': {
-            '$type': 'number'
-          }
-        }
+              }
+            }
+          }]
+        }, true]
       }
-    ]
+    }
+  }, {
+    '$project': {
+      '__alias_0': '$confirmed',
+      '__alias_1': '$lat',
+      '__alias_2': '$lat',
+      '__alias_3': '$long',
+      '__alias_4': '$countryRegion',
+      '__aliast_5': '$combinedKey'
+    }
+  }, {
+    '$project': {
+      'intensity': '$__alias_0',
+      'geopoint': '$__alias_1',
+      'latitude': '$__alias_2',
+      'longitude': '$__alias_3',
+      'countryRegion': '$__alias_4',
+      'combinedKey': '$__aliast_5',
+      '_id': 0
+    }
+  }, {
+    '$addFields': {
+      'geopoint': {
+        'type': 'Point',
+        'coordinates': [
+          '$longitude', '$latitude'
+        ]
+      }
+    }
+  }, {
+    '$project': {
+      'latitude': false,
+      'longitude': false
+    }
+  }, {
+    '$match': {
+      'geopoint.type': 'Point',
+      'geopoint.coordinates': {
+        '$type': 'array'
+      },
+      'geopoint.coordinates.0': {
+        '$type': 'number'
+      },
+      'geopoint.coordinates.1': {
+        '$type': 'number'
+      }
+    }
+  }]
 
-    let result = await DBHelper.executeAggregate(query)
-    res.json(result)
-}) 
+  let result = await DBHelper.executeAggregate(query)
+  res.json(result)
+})
 
 
 /****************************
@@ -356,14 +349,164 @@ app.post('/casePoint/batchCasePoint', async function (req, res) {
     date.add(1, 'days')
   }
 
-  res.json({ statusCode: 200, body: [] })
+  res.json({
+    statusCode: 200,
+    body: []
+  })
 });
+
+
+
+/****************************
+ * Forecasts method *
+ ****************************/
+app.get('/casePoint/forecasts/:country', async function (req, res) {
+  
+  let country = req.params.country
+  
+  let latestForecastDate = await DBHelper.getLatestForecastDay()
+  let query = [
+    {
+      '$match': {
+        'country': {
+          '$in': [
+            country
+          ]
+        }, 
+        '$expr': {
+          '$and': [
+            {
+              '$cond': [
+                {
+                  '$not': {
+                    '$isArray': [
+                      '$date'
+                    ]
+                  }
+                }, {
+                  '$gte': [
+                    '$date', {
+                      '$dateFromString': {
+                        'dateString': latestForecastDate, 
+                        'timezone': 'UTC'
+                      }
+                    }
+                  ]
+                }, {
+                  '$reduce': {
+                    'input': '$date', 
+                    'initialValue': false, 
+                    'in': {
+                      '$or': [
+                        '$$value', {
+                          '$gte': [
+                            '$$this', {
+                              '$dateFromString': {
+                                'dateString': latestForecastDate, 
+                                'timezone': 'UTC'
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            }, {
+              '$cond': [
+                {
+                  '$not': {
+                    '$isArray': [
+                      '$date'
+                    ]
+                  }
+                }, {
+                  '$lte': [
+                    '$date', {
+                      '$dateFromString': {
+                        'dateString': latestForecastDate, 
+                        'timezone': 'UTC'
+                      }
+                    }
+                  ]
+                }, {
+                  '$reduce': {
+                    'input': '$date', 
+                    'initialValue': false, 
+                    'in': {
+                      '$or': [
+                        '$$value', {
+                          '$lte': [
+                            '$$this', {
+                              '$dateFromString': {
+                                'dateString': latestForecastDate, 
+                                'timezone': 'UTC'
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            }, true
+          ]
+        }
+      }
+    }, {
+      '$group': {
+        '_id': {
+          '__alias_0': '$ds', 
+          '__alias_1': '$case_type', 
+          '__alias_5': '$model'
+        }, 
+        '__alias_2': {
+          '$sum': '$yhat'
+        }, 
+        '__alias_3': {
+          '$sum': '$yhat_lower'
+        }, 
+        '__alias_4': {
+          '$sum': '$yhat_upper'
+        }
+      }
+    }, {
+      '$project': {
+        '_id': 0, 
+        '__alias_0': '$_id.__alias_0', 
+        '__alias_1': '$_id.__alias_1', 
+        '__alias_2': 1, 
+        '__alias_3': 1, 
+        '__alias_4': 1, 
+        '__alias_5': '$_id.__alias_5'
+      }
+    }, {
+      '$project': {
+        'ds': '$__alias_0', 
+        'y_hat': '$__alias_2', 
+        'y_hat_lower': '$__alias_3', 
+        'y_hat_upper': '$__alias_4', 
+        'case_type': '$__alias_1', 
+        'model': '$__alias_5', 
+        '_id': 0
+      }
+    }, {
+      '$sort': {
+        'ds': -1
+      }
+    }
+  ]
+
+  let result = await DBHelper.executeForecastAggregate(query);
+  result['lastUpdateDate'] = latestForecastDate
+  res.json(result)
+
+})
 
 app.listen(3001, function () { // put back 3000
   console.log("App started")
 });
 
 module.exports = app
-
-
-
