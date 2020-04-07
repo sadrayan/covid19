@@ -107,7 +107,6 @@
     "react-dom": "^16.13.1",
     "react-draft-wysiwyg": "1.10.12",
     "react-dropzone": "^6.2.4",
-    "react-google-maps": "^9.4.5",
     "react-grid-layout": "^0.16.6",
     "react-images": "^0.5.19",
     "react-maskedinput": "^4.0.1",
