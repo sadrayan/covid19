@@ -39,4 +39,4 @@ amplifyxc.config
 
 amplify/backend/function/covidfunction/src/variables.env
 
-aws/predictionFunction
+aws/predictionFunction/upload-to-s3.zip
