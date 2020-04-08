@@ -19,6 +19,14 @@
         backgroundColorFade: "rgba(255,65,105,0)",
         borderColor: "rgb(255,65,105)",
         rgb: '#ff4169'
-    }
+    },
+    // same style as confirmed for now
+    "active": { 
+        backgroundColor: "rgba(255,180,0,1)",
+        backgroundColorLighter: "rgba(255,180,0,0.8)",
+        backgroundColorFade: "rgba(255,180,0,0)",
+        borderColor: "rgb(255,180,0)",
+        rgb: '#ffb400'
+    },
 }
 export default statsStyles
