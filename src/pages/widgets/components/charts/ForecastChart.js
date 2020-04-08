@@ -97,30 +97,35 @@ export default class ForecastChart extends PureComponent {
       data: caseCountry,
       zIndex: 1,
       marker: {
-        lineWidth: 1,
+        // enabled: false
+        lineWidth: 0.5,
       }
     })
 
     series.push({
       name: 'forecast',
-      data: forecast.map(el => el.forecastNumber).reverse()
-    })
-
-
-console.log(forecast.map(el => [el.date, el.y_hat_lower, el.y_hat_upper]).reverse())
-    series.push({
-      name: 'Range',
-      data: forecast.map(el => [el.date, el.y_hat_lower, el.y_hat_upper]).reverse(),
-      type: 'arearange',
-      lineWidth: 0,
-      linkedTo: ':previous',
-      color: colors.blue,
-      fillOpacity: 0.3,
-      zIndex: 0,
+      data: forecast.map(el => el.forecastNumber).reverse(),
       marker: {
-        enabled: false
+        // enabled: false
+        lineWidth: 0.5,
       }
     })
+
+
+    // console.log(forecast.map(el => [el.date, el.y_hat_lower, el.y_hat_upper]).reverse())
+    // series.push({
+    //   name: 'Range',
+    //   data: forecast.map(el => [el.date, el.y_hat_lower, el.y_hat_upper]).reverse(),
+    //   type: 'arearange',
+    //   lineWidth: 0,
+    //   linkedTo: ':previous',
+    //   color: colors.blue,
+    //   fillOpacity: 0.3,
+    //   zIndex: 0,
+    //   marker: {
+    //     enabled: false
+    //   }
+    // })
 
     let categories = forecast.map(el => moment(el.date).utc().format('YYYY-MM-DD'))
 
@@ -179,20 +184,18 @@ console.log(forecast.map(el => [el.date, el.y_hat_lower, el.y_hat_upper]).revers
         title: {
           text: null
         },
-        min:0,
+        min: 0,
+        tickInterval : 50000,
         gridLineColor: colors.gridLineColor
       },
       series: series
     }
 
-    if (this.state.forecastType === 'confirmed'){
-      chartData['yAxis']['tickInterval'] = 50000 
-      console.log('hssssssssssss')
-    }
-      
+    if (this.state.forecastType === 'confirmed')
+      delete chartData['yAxis']['tickInterval']
     
-      this.setState({ chartData: chartData, isReceiving: false })
-
+     
+    this.setState({ chartData: chartData, isReceiving: false })
     return chartData
   }
 
@@ -201,7 +204,7 @@ console.log(forecast.map(el => [el.date, el.y_hat_lower, el.y_hat_upper]).revers
 
     return (
       <Widget
-        title={<h5>Countries <span className="fw-semi-bold">COVID-19 Cases</span></h5>}
+        title={<h5>Forecast <span className="fw-semi-bold">COVID-19 Cases</span></h5>}
         fetchingData={isReceiving}
       >
         <Row md="12" className="justify-content-center" >

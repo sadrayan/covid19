@@ -10,12 +10,14 @@ from datetime import datetime, timedelta
 from fbprophet import Prophet
 from numpy import exp, linspace, random
 import pymongo
+import os
+dbConnectionString = os.environ['dbConnectionString']
 
 
 # In[2]:
 
 
-client = pymongo.MongoClient("mongodb+srv://$USERNAME:$PASSWORD@cluster0-tznou.mongodb.net/Covid19Watch-dev?retryWrites=true&w=majority")
+client = pymongo.MongoClient(dbConnectionString)
 db = client['Covid19Watch-dev']
 collection = db['forecasts']
 casepoint_collection = db['casedatapoints']
