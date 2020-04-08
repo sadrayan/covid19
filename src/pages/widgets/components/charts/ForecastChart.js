@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Col, Row, FormGroup, Label, Input } from 'reactstrap';
+import Select from 'react-select';
 import Widget from "../../../../components/Widget/Widget";
 import HighchartsReact from 'highcharts-react-official'
 import config from '../config.js';
@@ -21,18 +22,15 @@ export default class ForecastChart extends PureComponent {
 
     this.state = {
       forecastType: 'confirmed',
-      country: 'US',
+      countryForecastFilter: 'US',
       isRecieving: true,
-      dailyForecast: []
+      dailyForecast: [],
+      countryList: ['US', 'Spain', 'Italy', 'Germany', 'France', 'China', 'Iran', 'United Kingdom'].map(el => { return { 'value': el, 'label': el } })
     };
   }
 
   async componentDidMount() {
-
-    await this.getCountryForecast();
-    //filter by date
-    this.getForecastDisplays();
-    await this.getCountryChartData()
+    await this.updateCountryForecasts()
   }
 
   updateForecasts() {
@@ -40,9 +38,16 @@ export default class ForecastChart extends PureComponent {
     this.getCountryChartData()
   }
 
+  async updateCountryForecasts() {
+    await this.getCountryForecast();
+    //filter by date
+    this.getForecastDisplays();
+    await this.getCountryChartData()
+  }
+
   async getCountryForecast() {
-    let { country } = this.state;
-    const countryForecastData = await API.get('covidapi', `/casePoint/forecasts/${country}`);
+    let { countryForecastFilter } = this.state;
+    const countryForecastData = await API.get('covidapi', `/casePoint/forecasts/${countryForecastFilter}`);
     this.setState({ countryForecastData: countryForecastData });
   }
 
@@ -52,7 +57,7 @@ export default class ForecastChart extends PureComponent {
     // defaulting to fbProphet now
     let forecastData = this.filterByModel(filterByDate);
     this.setState({ dailyForecast: forecastData });
-    console.log(forecastData)
+    // console.log(forecastData)
   }
 
   filterByModel(forecaseDataResult) {
@@ -78,19 +83,19 @@ export default class ForecastChart extends PureComponent {
    */
   async getCountryChartData() {
 
-    let { country, countryForecastData } = this.state
+    let { countryForecastFilter, countryForecastData } = this.state
     let forecast = this.filterByModel(countryForecastData.body)
     forecast = forecast.reverse().slice(0, 30 + 5)
-    console.log('forecastbycountry', forecast)
+    // console.log('forecastbycountry', forecast)
     let series = []
 
     ///
-    const result = await API.get('covidapi', `/casePoint/totalStat/${country}`);
+    const result = await API.get('covidapi', `/casePoint/totalStat/${countryForecastFilter}`);
 
     let caseCountry = result.body.map(el => el[this.state.forecastType])
 
     caseCountry = caseCountry.slice(0, 30).reverse() // choose top most infected regions
-    console.log(caseCountry)
+    // console.log(caseCountry)
 
     series.push({
       name: 'reported',
@@ -127,9 +132,11 @@ export default class ForecastChart extends PureComponent {
     //   }
     // })
 
-    let categories = forecast.map(el => moment(el.date).utc().format('YYYY-MM-DD'))
+    let categories = forecast.map(el => moment(el.date).utc().format('YYYY-MM-DD')).reverse()
+    let subtitleText = 'Next 5 days forecast<br/>last updated at: ' +
+      moment(countryForecastData.lastUpdateDate).utc().subtract(1, 'day').format('YYYY-MM-DD') + ' GMT'
 
-    console.log('categories', categories)
+    // console.log('categories', categories)
 
 
     let chartData = {
@@ -159,7 +166,7 @@ export default class ForecastChart extends PureComponent {
         }
       },
       subtitle: {
-        text: 'Next 5 days forecast',
+        text: subtitleText,
         style: {
           color: colors.textColor
         }
@@ -185,16 +192,16 @@ export default class ForecastChart extends PureComponent {
           text: null
         },
         min: 0,
-        tickInterval : 50000,
+        tickInterval: null,
         gridLineColor: colors.gridLineColor
       },
       series: series
     }
 
     if (this.state.forecastType === 'confirmed')
-      delete chartData['yAxis']['tickInterval']
-    
-     
+      chartData['yAxis']['tickInterval'] = 50000
+
+
     this.setState({ chartData: chartData, isReceiving: false })
     return chartData
   }
@@ -204,11 +211,28 @@ export default class ForecastChart extends PureComponent {
 
     return (
       <Widget
-        title={<h5>Forecast <span className="fw-semi-bold">COVID-19 Cases</span></h5>}
+        title={
+          <div className="d-flex justify-content-between flex-wrap">
+            <h5>Forecast <span className="fw-semi-bold">COVID-19 Cases</span></h5>
+
+            <Col s={4} xl={2} md={6} >
+              <Select
+                classNamePrefix="react-select"
+                className="selectCustomization sm "
+                options={this.state.countryList}
+                onChange={(event) => { this.setState({ countryForecastFilter: event.value }, this.updateCountryForecasts) }}
+                value={this.state.countryList.filter(el => el.value === this.state.countryForecastFilter)[0]}
+              />
+            </Col> 
+
+          </div>
+
+        }
         fetchingData={isReceiving}
       >
-        <Row md="12" className="justify-content-center" >
 
+        <Row md="12" className="justify-content-center" >
+        
           <FormGroup size='sm' style={{ marginLeft: '10px' }} className="radio abc-radio">
             <Input type="radio" id="confirmInput" name="forecastType" value="confirmed" defaultChecked
               onChange={(event) => { this.setState({ forecastType: event.target.value }, this.updateForecasts) }} />
@@ -224,6 +248,8 @@ export default class ForecastChart extends PureComponent {
               onChange={(event) => { this.setState({ forecastType: event.target.value }, this.updateForecasts) }} />
             <Label for="deathInput">Death</Label>
           </FormGroup>
+
+          
 
         </Row>
 
