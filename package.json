@@ -87,6 +87,7 @@
     "messenger": "git+https://github.com/HubSpot/messenger.git#v1.4.2",
     "minimist": "^1.2.5",
     "moment": "^2.22.2",
+    "moving-averages": "^4.0.5",
     "nvd3": "1.8.6",
     "rc-color-picker": "^1.2.6",
     "rc-hammerjs": "0.6.9",

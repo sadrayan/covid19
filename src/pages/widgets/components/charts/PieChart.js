@@ -3,7 +3,6 @@ import Widget from '../../../../components/Widget/Widget';
 import HighchartsReact from 'highcharts-react-official'
 import statsStyles from './ChartStyles'
 import { API } from 'aws-amplify'
-const moment = require('moment')
  
 class PieChart extends Component {
 
@@ -17,7 +16,6 @@ class PieChart extends Component {
     async getStatData(countryFilter) {
 
         const result = await API.get('covidapi', `/casePoint/totalStat/${countryFilter === 'All' ? '' : countryFilter}`);
-        console.log('results in pie', result)
 
         let pieData = {
             data: [],

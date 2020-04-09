@@ -100,6 +100,7 @@ export default class ForecastChart extends PureComponent {
     series.push({
       name: 'reported',
       data: caseCountry,
+      type: 'column',
       zIndex: 1,
       marker: {
         // enabled: false
@@ -168,7 +169,7 @@ export default class ForecastChart extends PureComponent {
       subtitle: {
         text: subtitleText,
         style: {
-          color: colors.textColor
+          color: colors.default
         }
       },
       plotOptions: {

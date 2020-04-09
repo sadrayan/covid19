@@ -116,11 +116,10 @@ class CaseTypeStat extends React.Component {
             removeMargin={true}
             key={idx}
             title={<Row>
-              <Col xs={6}> <h5> {stats.name} {stats.value}</h5>
+              <Col xs={6}> <h6> {stats.name} {stats.value}</h6>
                 <div className="d-flex align-items-start h3">
                   <h6>{stats.percentage}%</h6>
-                  <i className={`la la-arrow-right ml-sm text-${stats.increase ? 'success' : 'danger'} 
-                rotate-${stats.increase ? '315' : '45'}`} />
+                  <i className={`la la-arrow-right ml-sm text-${stats.increase ? 'success' : 'danger'} rotate-${stats.increase ? '315' : '45'}`} />
                 </div>
               </Col>
             </Row>}
