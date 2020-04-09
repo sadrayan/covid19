@@ -12,13 +12,14 @@ from numpy import exp, linspace, random
 import pymongo
 import os
 dbConnectionString = os.environ['dbConnectionString']
+dbClient = os.environ['dbClient']
 
 
 # In[2]:
 
 
 client = pymongo.MongoClient(dbConnectionString)
-db = client['Covid19Watch-dev']
+db = client[dbClient]
 collection = db['forecasts']
 casepoint_collection = db['casedatapoints']
 
