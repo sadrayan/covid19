@@ -7,6 +7,7 @@ import formStyle from '../forms/elements/Elements.module.scss'
 import OveralMainChart from '../widgets/components/charts/OveralMainChart';
 import PieChart from '../widgets/components/charts/PieChart';
 import CountryCompareChart from '../widgets/components/charts/CountryCompareChart';
+import ForecastChart from '../widgets/components/charts/ForecastChart';
 import CaseCountryPieChart from '../widgets/components/charts/CaseCountryPieChart';
 import CaseTypeStat from '../widgets/components/charts/CaseTypeStats';
 import Map from './components/am4chartMap/am4chartMap';
@@ -71,10 +72,10 @@ class Dashboard extends React.Component {
         <Row>
           <Col lg={1} />
           <Col lg={7}>
-                <Map ref={this.mapElement} />
+            <Map ref={this.mapElement} />
           </Col>
 
-          <Col xl={3} lg={3} md={6} xs={12} >
+          <Col xl={3} lg={3} md={12} xs={12} >
 
             <FormGroup row>
               <Col className={formStyle.select2}>
@@ -90,6 +91,13 @@ class Dashboard extends React.Component {
 
             <CaseTypeStat ref={this.statsElement} />
 
+          </Col>
+        </Row>
+
+        <Row >
+          <Col lg={1} />
+          <Col lg={10} xs={12}>
+            <ForecastChart selectCountryData={this.state.selectCountryData} />
           </Col>
         </Row>
 

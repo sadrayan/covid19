@@ -1,0 +1,6 @@
+numpy
+pandas
+dnspython
+pystan==2.18
+fbprophet
+pymongo

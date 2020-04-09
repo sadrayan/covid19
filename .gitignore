@@ -38,3 +38,5 @@ amplify-gradle-config.json
 amplifyxc.config
 
 amplify/backend/function/covidfunction/src/variables.env
+
+aws/predictionFunction/upload-to-s3.zip

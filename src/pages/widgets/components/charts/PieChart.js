@@ -3,7 +3,6 @@ import Widget from '../../../../components/Widget/Widget';
 import HighchartsReact from 'highcharts-react-official'
 import statsStyles from './ChartStyles'
 import { API } from 'aws-amplify'
-const moment = require('moment')
  
 class PieChart extends Component {
 
@@ -24,17 +23,18 @@ class PieChart extends Component {
             backgroundColor: []
         }
 
-        for (let type of ['confirmed', 'recovered', 'deaths']) {
-            let data = result.body.map(el => { return [moment(el.date).utc().format('YYYY-MM-DD'), el[type]] });
-            // reverse sort by oldest first
-            data.reverse();
+
+        result.body.forEach(el => {
+            el.active = el.confirmed - el.recovered - el.deaths
+        })
+        for (let type of ['active', 'recovered', 'deaths']) {
+            let data = result.body.map(el => { return el[type] });
             pieData['data'].push({
                 name: type,
-                y: data[data.length - 1][1]
+                y: data[0]
             })
             pieData['backgroundColor'].push(statsStyles[type]['rgb'])
             pieData['labels'].push(type)
-
         }
     
         let statsData = {

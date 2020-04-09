@@ -126,8 +126,8 @@ class Am4chartMap extends Component {
 
   getMapData(countryFilter) {
     let { caseDataPoints } = this.state
-    // for performance, only show geo points with 10 or more confirmed cases
-    caseDataPoints = caseDataPoints.filter(el => el.intensity >= 10)
+    // for performance, only show geo points with 50 or more confirmed cases
+    caseDataPoints = caseDataPoints.filter(el => el.intensity >= 50)
 
     if (countryFilter !== 'All')
       caseDataPoints = caseDataPoints.filter(el => el.countryRegion === countryFilter)
