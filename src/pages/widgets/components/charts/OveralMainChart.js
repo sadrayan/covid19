@@ -38,17 +38,17 @@ export default class OveralMainChart extends React.PureComponent {
     let data = result.body.map(el => { return [moment(el.date).utc().format('YYYY-MM-DD'), el.active] })
 
     data.reverse();
-    console.log('data', data)
+    // console.log('data', data)
 
     // calculate Active Delta cases
     // Bump them to next date on chart
     let deltaCasePerDay = this.diff(data.map(el => el[1]))
     deltaCasePerDay.unshift(0)
     let movingAvg = ma(deltaCasePerDay, 2).flat()
-    console.log('delta', deltaCasePerDay)
-    console.log('moving average', movingAvg)
+    // console.log('delta', deltaCasePerDay)
+    // console.log('moving average', movingAvg)
     let trendUp = (deltaCasePerDay[deltaCasePerDay.length - 1] - movingAvg[movingAvg.length - 1]) >= 0
-    console.log('trendUp', trendUp)
+    // console.log('trendUp', trendUp)
 
 
     series.push({
@@ -71,7 +71,7 @@ export default class OveralMainChart extends React.PureComponent {
       }
     })
 
-    console.log(moment.utc(data[0][0]))
+    // console.log(moment.utc(data[0][0]))
 
     let chartOptions = {
       credits: {
@@ -141,7 +141,7 @@ export default class OveralMainChart extends React.PureComponent {
 
     // STUPID
     if (this.chartRef.current.chart) {
-      console.log(this.chartRef.current)
+      // console.log(this.chartRef.current)
       this.chartRef.current.chart.series.forEach(el =>
         el.update({
           pointStart: moment.utc(data[0][0]).valueOf()
