@@ -148,7 +148,7 @@ def prophet(df, country, case_type, next_days):
 
 def lambda_handler(event, context):
     data = get_data()
-    countryList = ['US', 'Spain', 'Italy', 'Germany', 'France', 'China', 'Iran', 'United Kingdom']
+    countryList = ['US', 'Canada', 'Spain', 'Italy', 'Germany', 'France', 'China', 'Iran', 'United Kingdom']
     next_days = 5
     
     for country in countryList: 

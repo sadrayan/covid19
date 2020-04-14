@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import { Switch, Route, withRouter } from 'react-router';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 // import Hammer from 'rc-hammerjs';
@@ -60,12 +59,5 @@ class Layout extends React.Component {
   }
 }
 
-function mapStateToProps(store) {
-  return {
-    sidebarOpened: store.navigation.sidebarOpened,
-    sidebarPosition: store.navigation.sidebarPosition,
-    sidebarVisibility: store.navigation.sidebarVisibility,
-  };
-}
 
-export default withRouter(connect(mapStateToProps)(Layout));
+export default withRouter(Layout);
