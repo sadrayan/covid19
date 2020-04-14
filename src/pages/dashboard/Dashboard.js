@@ -105,7 +105,7 @@ class Dashboard extends React.Component {
         <Row >
           <Col lg={1} />
           <Col lg={6} xs={12}>
-            <CountryCompareChart selectCountryData={this.state.selectCountryData} />
+            <OveralMainChart ref={this.overalMainChartElement} />
           </Col>
           <Col lg={4} xs={12} >
             <CaseCountryPieChart  />
@@ -115,7 +115,7 @@ class Dashboard extends React.Component {
         <Row>
           <Col lg={1} />
           <Col lg={6} xs={12}>
-            <OveralMainChart ref={this.overalMainChartElement} />
+            <CountryCompareChart selectCountryData={this.state.selectCountryData} />
           </Col>
           <Col lg={4} xs={12}>
             <PieChart ref={this.overalPieChartElement}  />

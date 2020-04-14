@@ -25,7 +25,7 @@ export default class ForecastChart extends PureComponent {
       countryForecastFilter: 'US',
       isRecieving: true,
       dailyForecast: [],
-      countryList: ['US', 'Spain', 'Italy', 'Germany', 'France', 'China', 'Iran', 'United Kingdom'].map(el => { return { 'value': el, 'label': el } })
+      countryList: ['US', 'Canada', 'Spain', 'Italy', 'Germany', 'France', 'China', 'Iran', 'United Kingdom'].map(el => { return { 'value': el, 'label': el } })
     };
   }
 
@@ -224,7 +224,7 @@ export default class ForecastChart extends PureComponent {
                 onChange={(event) => { this.setState({ countryForecastFilter: event.value }, this.updateCountryForecasts) }}
                 value={this.state.countryList.filter(el => el.value === this.state.countryForecastFilter)[0]}
               />
-            </Col> 
+            </Col>
 
           </div>
 
@@ -233,7 +233,7 @@ export default class ForecastChart extends PureComponent {
       >
 
         <Row md="12" className="justify-content-center" >
-        
+
           <FormGroup size='sm' style={{ marginLeft: '10px' }} className="radio abc-radio">
             <Input type="radio" id="confirmInput" name="forecastType" value="confirmed" defaultChecked
               onChange={(event) => { this.setState({ forecastType: event.target.value }, this.updateForecasts) }} />
@@ -250,7 +250,7 @@ export default class ForecastChart extends PureComponent {
             <Label for="deathInput">Death</Label>
           </FormGroup>
 
-          
+
 
         </Row>
 
