@@ -131,7 +131,7 @@ export default class OveralMainChart extends React.PureComponent {
           pointInterval: 24 * 3600 * 1000, // one day
           tooltip: {
             pointFormatter() {
-              return `<span style="color: ${this.color}">${this.series.name} at ${nf.format(this.y)}</span>`;
+              return `<span style="color: #595d78">${this.series.name} at ${nf.format(this.y)}</span>`;
             }
           }
         },

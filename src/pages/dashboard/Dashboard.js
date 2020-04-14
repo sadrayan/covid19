@@ -1,5 +1,5 @@
 import React from 'react';
-import { Row, Col, FormGroup } from 'reactstrap';
+import { Row, Col, FormGroup, Label } from 'reactstrap';
 import Select from 'react-select';
 
 import s from './Dashboard.module.scss';
@@ -60,25 +60,26 @@ class Dashboard extends React.Component {
     return (
       <div className={s.root}>
         <Row>
-          <Col lg={1} />
+          <Col lg={1}/>
           <Col lg={7}>
             <h1 className="page-title">COVID19Watch<small>.info</small> </h1>
           </Col>
           <Col xl={3} lg={3} md={6} xs={12}>
             <h2 className="page-title" style={{ textAlign: 'center' }} ><small><small>{moment.utc().format('llll') } GMT</small></small>  </h2>
           </Col>
+          
         </Row>
 
         <Row>
-          <Col lg={1} />
+          <Col lg={1}/>
           <Col lg={7}>
             <Map ref={this.mapElement} />
           </Col>
 
           <Col xl={3} lg={3} md={12} xs={12} >
-
             <FormGroup row>
-              <Col className={formStyle.select2}>
+              <Label md="4" for="default-select">Country: </Label>
+              <Col md="8" className={s.select2}>
                 <Select
                   classNamePrefix="react-select"
                   className="selectCustomization"
@@ -88,10 +89,9 @@ class Dashboard extends React.Component {
                 />
               </Col>
             </FormGroup>
-
             <CaseTypeStat ref={this.statsElement} />
-
           </Col>
+          
         </Row>
 
         <Row >
@@ -105,7 +105,7 @@ class Dashboard extends React.Component {
         <Row >
           <Col lg={1} />
           <Col lg={6} xs={12}>
-            <CountryCompareChart selectCountryData={this.state.selectCountryData} />
+            <OveralMainChart ref={this.overalMainChartElement} />
           </Col>
           <Col lg={4} xs={12} >
             <CaseCountryPieChart  />
@@ -115,7 +115,7 @@ class Dashboard extends React.Component {
         <Row>
           <Col lg={1} />
           <Col lg={6} xs={12}>
-            <OveralMainChart ref={this.overalMainChartElement} />
+            <CountryCompareChart selectCountryData={this.state.selectCountryData} />
           </Col>
           <Col lg={4} xs={12}>
             <PieChart ref={this.overalPieChartElement}  />

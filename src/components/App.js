@@ -1,5 +1,4 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import { Switch, Route, Redirect } from 'react-router';
 import { HashRouter } from 'react-router-dom';
 
@@ -28,8 +27,5 @@ class App extends React.PureComponent {
   }
 }
 
-const mapStateToProps = state => ({
-  isAuthenticated: state.auth.isAuthenticated,
-});
 
-export default connect(mapStateToProps)(App);
+export default App;
