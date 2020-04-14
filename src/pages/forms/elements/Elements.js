@@ -633,7 +633,7 @@ class Elements extends React.Component {
                 <legend>Default form with labels on left</legend>
                 <FormGroup row>
                   <Label md="4" for="default-select">Default select</Label>
-                  <Col md="6" className={s.select2}>
+                  <Col md="8" className={s.select2}>
                     <Select 
                       classNamePrefix="react-select"
                       className="selectCustomization"
