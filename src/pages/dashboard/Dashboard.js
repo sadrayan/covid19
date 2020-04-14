@@ -3,6 +3,7 @@ import { Row, Col, FormGroup, Label } from 'reactstrap';
 import Select from 'react-select';
 
 import s from './Dashboard.module.scss';
+// eslint-disable-next-line
 import formStyle from '../forms/elements/Elements.module.scss'
 import OveralMainChart from '../widgets/components/charts/OveralMainChart';
 import PieChart from '../widgets/components/charts/PieChart';
