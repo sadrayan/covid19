@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4maps from "@amcharts/amcharts4/maps";
 import am4geodata_worldLow from "@amcharts/amcharts4-geodata/worldLow";
+import am4geodata_usaLow from "@amcharts/amcharts4-geodata/usaLow";
 import s from './am4chartMap.module.scss';
 import Widget from '../../../../components/Widget';
 
@@ -22,26 +23,20 @@ class Am4chartMap extends Component {
   }
 
   async componentDidMount() {
-
     // fetch from DB - data is in geopoint format
     const result = await API.get('covidapi', '/casePoint/mapCasePoint');
     this.setState({ caseDataPoints: result.body })
-
     // transform map data
     this.getMapData('All')
 
-    am4core.disposeAllCharts();
     let map = am4core.create("map", am4maps.MapChart);
-    map.geodata = am4geodata_worldLow;
     map.percentHeight = 90;
     map.dy = 10;
-    map.projection = new am4maps.projections.Miller();
     let polygonSeries = map.series.push(new am4maps.MapPolygonSeries());
     polygonSeries.useGeodata = true;
     map.homeZoomLevel = 1;
     // Exclude Antartica
     polygonSeries.exclude = ["AQ"];
-
     map.zoomControl = new am4maps.ZoomControl();
     map.zoomControl.layout = 'horizontal';
     map.zoomControl.align = 'right';
@@ -62,40 +57,43 @@ class Am4chartMap extends Component {
     map.zoomControl.plusButton.scale = .75;
     map.zoomControl.plusButton.label.scale = .75;
     map.zoomControl.plusButton.dx = 5;
-
     let plusButtonHoverState = map.zoomControl.plusButton.background.states.create("hover");
     plusButtonHoverState.properties.fill = am4core.color("#354D84");
     let minusButtonHoverState = map.zoomControl.minusButton.background.states.create("hover");
     minusButtonHoverState.properties.fill = am4core.color("#354D84");
-
     let polygonTemplate = polygonSeries.mapPolygons.template;
     polygonTemplate.tooltipText = "{name}";
     polygonTemplate.fill = am4core.color("#474D84");
-    polygonTemplate.stroke = am4core.color("#6979C9")
-
+    polygonTemplate.stroke = am4core.color("#6979C9");
     let hs = polygonTemplate.states.create("hover");
     hs.properties.fill = am4core.color("#354D84");
-
-    this.setState({ map: map })
+    this.setState({ 'map' : map })
   }
 
-
   componentDidUpdate() {
-
+    // am4core.disposeAllCharts();
+    let { map } = this.state
+    
     // first time around map is not ready, pass
-    if (!this.state.map)
+    if (!map)
       return
 
+    if (this.props.countryFilter === 'US') {
+      map.geodata = am4geodata_usaLow;
+      map.projection = new am4maps.projections.AlbersUsa();
+    } else {
+      map.geodata = am4geodata_worldLow;
+      map.projection = new am4maps.projections.Miller();
+    }  
+
     // to remove the plotted points and render country filter
-    if (this.state.map.series.length > 1) {
-      this.state.map.series.removeIndex(1).dispose();
-      console.log('remmoving')
+    if (map.series.length > 1) {
+      map.series.removeIndex(1).dispose();
     }
 
-    let citySeries = this.state.map.series.push(new am4maps.MapImageSeries());
+    let citySeries = map.series.push(new am4maps.MapImageSeries());
     citySeries.data = this.state.mapData
     citySeries.dataFields.value = "size";
-
 
     let cityTemplate = citySeries.mapImages.template;
     cityTemplate.nonScaling = true;
@@ -115,7 +113,7 @@ class Am4chartMap extends Component {
     circle.tooltipText = '{tooltip}';
     circle.propertyFields.radius = 'size';
 
-    this.map = this.state.map;
+    this.map = map;
   }
 
   componentWillUnmount() {
@@ -127,10 +125,23 @@ class Am4chartMap extends Component {
   getMapData(countryFilter) {
     let { caseDataPoints } = this.state
     // for performance, only show geo points with 50 or more confirmed cases
-    caseDataPoints = caseDataPoints.filter(el => el.intensity >= 50)
+    
+    if (countryFilter === 'All') 
+      caseDataPoints = caseDataPoints.filter(el => el.intensity >= 100)
 
-    if (countryFilter !== 'All')
+    if (countryFilter !== 'All') {
       caseDataPoints = caseDataPoints.filter(el => el.countryRegion === countryFilter)
+    }
+      
+
+    // remove points that fall outside of map
+    if (countryFilter === 'US') {
+      caseDataPoints = caseDataPoints.filter(el => el.intensity >= 50)
+      caseDataPoints = caseDataPoints.filter(el => el.geopoint.coordinates[0] !== 0)
+      caseDataPoints = caseDataPoints.filter(el => el.combinedKey.indexOf('Virgin Islands') === -1)
+      caseDataPoints = caseDataPoints.filter(el => el.combinedKey.indexOf('Puerto Rico') === -1)
+      caseDataPoints = caseDataPoints.filter(el => el.combinedKey.indexOf('Guam') === -1)
+    }
 
     let mapData = caseDataPoints.map(casePoint => {
       return {

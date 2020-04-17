@@ -74,7 +74,7 @@ class Dashboard extends React.Component {
         <Row>
           <Col lg={1}/>
           <Col lg={7}>
-            <Map ref={this.mapElement} />
+            <Map ref={this.mapElement} countryFilter={this.state.countryFilter} />
           </Col>
 
           <Col xl={3} lg={3} md={12} xs={12} >
