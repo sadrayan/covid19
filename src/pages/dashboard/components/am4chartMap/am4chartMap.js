@@ -34,7 +34,7 @@ class Am4chartMap extends Component {
     map.dy = 10;
     let polygonSeries = map.series.push(new am4maps.MapPolygonSeries());
     polygonSeries.useGeodata = true;
-    map.homeZoomLevel = 1;
+    map.homeZoomLevel = 1.2;
     // Exclude Antartica
     polygonSeries.exclude = ["AQ"];
     map.zoomControl = new am4maps.ZoomControl();
