@@ -5,7 +5,11 @@ import HighchartsReact from 'highcharts-react-official'
 import statsStyles from './ChartStyles'
 import { API } from 'aws-amplify'
 import { ma, } from 'moving-averages'
+import config from '../config'
+import regression from 'regression'
+
 const moment = require('moment')
+const colors = config.chartColors;
 var nf = new Intl.NumberFormat();
 
 export default class HasCurveFlatten extends React.PureComponent {
@@ -20,7 +24,6 @@ export default class HasCurveFlatten extends React.PureComponent {
   }
 
   async componentDidMount() {
-
     // call first time with All
     await this.getStatData(this.state.countryFilter);
   }
@@ -44,18 +47,43 @@ export default class HasCurveFlatten extends React.PureComponent {
 
     // calculate Active Delta cases
     let deltaCasePerDay = this.diff(data.map(el => el[1]))
-
-    let movingAvg = ma(deltaCasePerDay, 2).flat()
     // console.log('delta', deltaCasePerDay)
+    let movingAvg = ma(deltaCasePerDay, 5).flat()
     // console.log('moving average', movingAvg)
     let trendUp = (deltaCasePerDay[deltaCasePerDay.length - 1] - movingAvg[movingAvg.length - 1]) >= 0
     // console.log('trendUp', trendUp)
 
 
+    const regResult = regression.linear(movingAvg.map((el, index) => { return [index, el] }));
+    const gradient = regResult.equation[0];
+    const yIntercept = regResult.equation[1];
+    console.log(regResult, gradient, yIntercept)    
+
+    let trend = movingAvg.map(el =>  {return 0} )
+    for (let i = 1; i <= 20; i++){
+      trend.push(regResult.predict([data.length + i])[1])
+    }
+    console.log('trend' , trend)
+
+    console.log('predicts', regResult.predict([data.length + 5]))
+
+
+    series.push({
+      name: 'Trend',
+      type: 'scatter',
+      data: trend,
+      lineWidth: 2,
+      dashStyle: "Dash",
+      color: colors.textColor,
+      tooltip: {
+        valueSuffix: ' mm'
+      }
+    })
+
     series.push({
       name: 'New Active',
       type: 'column',
-      color: statsStyles['active']['backgroundColorLighter'],
+      color: statsStyles['confirmed']['backgroundColorLighter'],
       data: deltaCasePerDay,
       tooltip: {
         valueSuffix: ' mm'
@@ -65,7 +93,7 @@ export default class HasCurveFlatten extends React.PureComponent {
     series.push({
       name: 'Active (MA)',
       type: 'spline',
-      color: statsStyles['active']['backgroundColor'],
+      color: colors.red,
       data: movingAvg,
       tooltip: {
         valueSuffix: ' mm'
@@ -87,7 +115,7 @@ export default class HasCurveFlatten extends React.PureComponent {
         enabled: false
       },
       subtitle: {
-        text: 'New Active cases (2-day-average)',
+        text: 'New Active cases (5-day-average)',
         style: {
           color: '#595d78'
         }
@@ -160,12 +188,12 @@ export default class HasCurveFlatten extends React.PureComponent {
 
 
   // get the delta on reported cases
-  diff(A) { return A.slice(1).map(function (n, i) { return n - A[i] }) }
+  diff(A) { return A.slice(1).map((n, i) => { return n - A[i] }) }
 
   render() {
-    
+
     let trendIcon = <i className="las la-caret-down text-success" style={{ marginTop: '-15px' }}>DOWN</i>
-    
+
     if (this.state.trendUp)
       trendIcon = <i className="las la-caret-up text-danger" style={{ marginTop: '-15px' }}>UP</i>
 

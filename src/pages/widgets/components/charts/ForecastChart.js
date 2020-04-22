@@ -86,7 +86,7 @@ export default class ForecastChart extends PureComponent {
     let { countryForecastFilter, countryForecastData } = this.state
     let forecast = this.filterByModel(countryForecastData.body)
     forecast = forecast.reverse().slice(0, 20 + 5)
-    console.log('forecastbycountry', forecast)
+    // console.log('forecastbycountry', forecast)
     let series = []
 
     ///
@@ -172,6 +172,7 @@ export default class ForecastChart extends PureComponent {
           text: null
         },
         min: 0,
+        // type: 'logarithmic',
         tickInterval: null,
         gridLineColor: colors.gridLineColor
       },

@@ -6,7 +6,7 @@ import HighchartsReact from 'highcharts-react-official'
 import { API } from 'aws-amplify'
 // import { ma, } from 'moving-averages'
 // const moment = require('moment')
-import regression from 'regression'
+// import regression from 'regression'
 var nf = new Intl.NumberFormat();
 
 
@@ -47,16 +47,7 @@ export default class HasCurveFlatten extends React.PureComponent {
       let data = countryCaseRollingAvg[country][this.state.rollingAvgType]
       data = data.map(el => parseInt(el))
       data = data.filter(el => el >= this.state.caseTypeThreshold[this.state.rollingAvgType])
-      console.log(country, this.state.rollingAvgType, data)
-
-      ///////
-      // data.map((el, index) => { return [index, el] })
-      const regResult = regression.linear( data.map((el, index) => { return [index, el] }) );
-      const gradient = regResult.equation[0];
-      const yIntercept = regResult.equation[1];
-      console.log(regResult, gradient, yIntercept)
-      console.log('predicts', regResult.predict([data.length + 1]))
-      ///////
+      // console.log(country, this.state.rollingAvgType, data)
 
       series.push({
         name: country,
@@ -66,7 +57,6 @@ export default class HasCurveFlatten extends React.PureComponent {
         tooltip: {
           valueSuffix: ' mm'
         },
-        // threshold: this.state.caseTypeThreshold[this.state.rollingAvgType]
       })
       labels.push({
         point: {
@@ -126,20 +116,6 @@ export default class HasCurveFlatten extends React.PureComponent {
           }
         }
       },
-      // annotations: [{
-      //   labels: labels,
-      //   labelOptions: {
-      //     x: 40, y: -10
-      //     // shape: 'connector',
-      //     // align: 'right',
-      //     // justify: false,
-      //     // crop: true,
-      //     // style: {
-      //     //   fontSize: '0.8em',
-      //     //   textOutline: '1px white'
-      //     // }
-      //   }
-      // }],
       plotOptions: {
         series: {
           marker: {
