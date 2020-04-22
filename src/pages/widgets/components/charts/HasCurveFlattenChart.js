@@ -1,16 +1,18 @@
-import React from 'react';
-import { Row, Col } from "reactstrap";
-import Widget from "../../../../components/Widget/Widget";
+import React from 'react'
+import { Row, Col } from "reactstrap"
+import Widget from "../../../../components/Widget/Widget"
+import Highcharts from 'highcharts'
 import HighchartsReact from 'highcharts-react-official'
 import statsStyles from './ChartStyles'
 import { API } from 'aws-amplify'
 import { ma, } from 'moving-averages'
 import config from '../config'
 import regression from 'regression'
-
+import annotations from 'highcharts/modules/annotations'
+annotations(Highcharts)
 const moment = require('moment')
-const colors = config.chartColors;
-var nf = new Intl.NumberFormat();
+const colors = config.chartColors
+var nf = new Intl.NumberFormat()
 
 export default class HasCurveFlatten extends React.PureComponent {
 
@@ -33,6 +35,8 @@ export default class HasCurveFlatten extends React.PureComponent {
    * @param {*} countryFilter 
    */
   async getStatData(countryFilter) {
+    
+    const rollingAvgSpan = 5;
     const result = await API.get('covidapi', `/casePoint/totalStat/${countryFilter === 'All' ? '' : countryFilter}`);
     let series = [];
 
@@ -41,31 +45,34 @@ export default class HasCurveFlatten extends React.PureComponent {
     // filter by first 100 day. 
     let data = result.body.filter(el => el.confirmed >= 100)
     data = data.map(el => { return [moment(el.date).utc().format('YYYY-MM-DD'), el.active] })
-
     data.reverse()
     // console.log('data', data)
 
     // calculate Active Delta cases
     let deltaCasePerDay = this.diff(data.map(el => el[1]))
-    // console.log('delta', deltaCasePerDay)
-    let movingAvg = ma(deltaCasePerDay, 5).flat()
-    // console.log('moving average', movingAvg)
+    console.log('delta', deltaCasePerDay)
+
+    // shift moving average forward to match the last elements
+    let movingAvg = ma(deltaCasePerDay, rollingAvgSpan).flat()
+    movingAvg.unshift( Array.from({length: rollingAvgSpan -1 }).map(el => 0) )
+    movingAvg = movingAvg.flat()
+    console.log('moving average', movingAvg)
     let trendUp = (deltaCasePerDay[deltaCasePerDay.length - 1] - movingAvg[movingAvg.length - 1]) >= 0
     // console.log('trendUp', trendUp)
 
-
-    const regResult = regression.linear(movingAvg.map((el, index) => { return [index, el] }));
+    const regResult = regression.linear(movingAvg.map((el, index) => { return [index, el] }))
     const gradient = regResult.equation[0];
     const yIntercept = regResult.equation[1];
-    console.log(regResult, gradient, yIntercept)    
+    console.log(regResult, gradient, yIntercept)   
+    
+    
 
     let trend = movingAvg.map(el =>  {return 0} )
-    for (let i = 1; i <= 20; i++){
+    for (let i = 1; i <= 10; i++){
       trend.push(regResult.predict([data.length + i])[1])
     }
     console.log('trend' , trend)
 
-    console.log('predicts', regResult.predict([data.length + 5]))
 
 
     series.push({
@@ -73,7 +80,7 @@ export default class HasCurveFlatten extends React.PureComponent {
       type: 'scatter',
       data: trend,
       lineWidth: 2,
-      dashStyle: "Dash",
+      dashStyle: "dot",
       color: colors.textColor,
       tooltip: {
         valueSuffix: ' mm'
@@ -148,9 +155,24 @@ export default class HasCurveFlatten extends React.PureComponent {
           }
         }
       },
-      annotations: {
-        visible: false
-      },
+      // annotations: {
+      //   visible: false
+      // },
+      annotations: [{
+        visible: true,
+        labels: [{
+            point: {
+                x: trend.length -5,
+                y: trend[trend.length -5],
+                xAxis: 0,
+                yAxis: 0
+            },
+            text: 'Trend line'
+        }],
+        labelOptions: {
+            x: 40, y: -10
+        }
+      }],
       plotOptions: {
         series: {
           shadow: false,
@@ -192,11 +214,10 @@ export default class HasCurveFlatten extends React.PureComponent {
 
   render() {
 
-    let trendIcon = <i className="las la-caret-down text-success" style={{ marginTop: '-15px' }}>DOWN</i>
-
-    if (this.state.trendUp)
-      trendIcon = <i className="las la-caret-up text-danger" style={{ marginTop: '-15px' }}>UP</i>
-
+    let trendIcon = ''
+    this.state.trendUp ?
+      trendIcon = <i className="las la-caret-up text-danger" style={{ marginTop: '-15px' }}>UP</i> :
+      trendIcon = <i className="las la-caret-down text-success" style={{ marginTop: '-15px' }}>DOWN</i>
 
     return (
       <Widget
