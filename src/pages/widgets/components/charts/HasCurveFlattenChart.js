@@ -35,15 +35,16 @@ export default class HasCurveFlatten extends React.PureComponent {
 
     // calculate Active cases
     result.body.forEach(el => { el.active = el.confirmed - el.recovered - el.deaths })
-    let data = result.body.map(el => { return [moment(el.date).utc().format('YYYY-MM-DD'), el.active] })
+    // filter by first 100 day. 
+    let data = result.body.filter(el => el.confirmed >= 100)
+    data = data.map(el => { return [moment(el.date).utc().format('YYYY-MM-DD'), el.active] })
 
-    data.reverse();
+    data.reverse()
     // console.log('data', data)
 
     // calculate Active Delta cases
-    // Bump them to next date on chart
     let deltaCasePerDay = this.diff(data.map(el => el[1]))
-    deltaCasePerDay.unshift(0)
+
     let movingAvg = ma(deltaCasePerDay, 2).flat()
     // console.log('delta', deltaCasePerDay)
     // console.log('moving average', movingAvg)
@@ -102,7 +103,8 @@ export default class HasCurveFlatten extends React.PureComponent {
       },
       yAxis: {
         title: false,
-        min: 0,
+        type: 'logarithmic',
+        // min: 0,
         labels: {
           style: {
             color: "#ffffff"
@@ -123,6 +125,8 @@ export default class HasCurveFlatten extends React.PureComponent {
       },
       plotOptions: {
         series: {
+          shadow: false,
+          borderWidth: 0,
           marker: {
             enabled: false,
             symbol: 'circle'

@@ -134,6 +134,7 @@
     "redux": "^4.0.1",
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.3.0",
+    "regression": "^2.0.1",
     "rickshaw": "1.6.6",
     "serialize-javascript": "^3.0.0",
     "showdown": "1.8.6",

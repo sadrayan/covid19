@@ -1,18 +1,20 @@
-import React from 'react';
-import { Row, Col, FormGroup, Label, Input } from 'reactstrap';
-import Widget from "../../../../components/Widget/Widget";
+import React from 'react'
+import { Row, Col, FormGroup, Label, Input } from 'reactstrap'
+import Widget from "../../../../components/Widget/Widget"
 import HighchartsReact from 'highcharts-react-official'
 // import statsStyles from './ChartStyles'
 import { API } from 'aws-amplify'
 // import { ma, } from 'moving-averages'
 // const moment = require('moment')
+import regression from 'regression'
 var nf = new Intl.NumberFormat();
+
 
 export default class HasCurveFlatten extends React.PureComponent {
 
 
   constructor(props) {
-    super(props);
+    super(props)
     this.chartRef = React.createRef();
     this.state = {
       rollingAvgType: 'confirmed',
@@ -28,7 +30,7 @@ export default class HasCurveFlatten extends React.PureComponent {
   async componentDidMount() {
     let result = await API.get('covidapi', '/casePoint/overviewRollingAvgStats')
     this.setState({ countryCaseRollingAvg: result.body })
-    this.getStatData();
+    this.getStatData()
   }
 
   /**
@@ -46,6 +48,16 @@ export default class HasCurveFlatten extends React.PureComponent {
       data = data.map(el => parseInt(el))
       data = data.filter(el => el >= this.state.caseTypeThreshold[this.state.rollingAvgType])
       console.log(country, this.state.rollingAvgType, data)
+
+      ///////
+      // data.map((el, index) => { return [index, el] })
+      const regResult = regression.linear( data.map((el, index) => { return [index, el] }) );
+      const gradient = regResult.equation[0];
+      const yIntercept = regResult.equation[1];
+      console.log(regResult, gradient, yIntercept)
+      console.log('predicts', regResult.predict([data.length + 1]))
+      ///////
+
       series.push({
         name: country,
         type: 'spline',
@@ -67,7 +79,7 @@ export default class HasCurveFlatten extends React.PureComponent {
       })
     }
 
-    console.log(labels)
+    // console.log(labels)
 
     let chartOptions = {
       credits: {
@@ -114,20 +126,20 @@ export default class HasCurveFlatten extends React.PureComponent {
           }
         }
       },
-      annotations: [{
-        labels: labels,
-        labelOptions: {
-          x: 40, y: -10
-          // shape: 'connector',
-          // align: 'right',
-          // justify: false,
-          // crop: true,
-          // style: {
-          //   fontSize: '0.8em',
-          //   textOutline: '1px white'
-          // }
-        }
-      }],
+      // annotations: [{
+      //   labels: labels,
+      //   labelOptions: {
+      //     x: 40, y: -10
+      //     // shape: 'connector',
+      //     // align: 'right',
+      //     // justify: false,
+      //     // crop: true,
+      //     // style: {
+      //     //   fontSize: '0.8em',
+      //     //   textOutline: '1px white'
+      //     // }
+      //   }
+      // }],
       plotOptions: {
         series: {
           marker: {
