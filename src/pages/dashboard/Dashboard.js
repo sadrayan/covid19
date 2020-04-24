@@ -5,12 +5,13 @@ import Select from 'react-select';
 import s from './Dashboard.module.scss';
 // eslint-disable-next-line
 import formStyle from '../forms/elements/Elements.module.scss'
-import OveralMainChart from '../widgets/components/charts/OveralMainChart';
+import HasCurveFlatten from '../widgets/components/charts/HasCurveFlattenChart';
 import PieChart from '../widgets/components/charts/PieChart';
 import CountryCompareChart from '../widgets/components/charts/CountryCompareChart';
 import ForecastChart from '../widgets/components/charts/ForecastChart';
 import CaseCountryPieChart from '../widgets/components/charts/CaseCountryPieChart';
 import CaseTypeStat from '../widgets/components/charts/CaseTypeStats';
+import CaseRollingAvgChart from '../widgets/components/charts/CaseRollingAvgChart';
 import Map from './components/am4chartMap/am4chartMap';
 
 import Amplify, { API } from 'aws-amplify'
@@ -32,7 +33,7 @@ class Dashboard extends React.Component {
 
     this.statsElement = React.createRef()
     this.mapElement = React.createRef()
-    this.overalMainChartElement = React.createRef()
+    this.hasCurveFlattenElement = React.createRef()
     this.overalPieChartElement = React.createRef()
   }
 
@@ -50,7 +51,7 @@ class Dashboard extends React.Component {
 
   handleFilterUpdate = (event) => {
     this.statsElement.current.getStatData(event.value)
-    this.overalMainChartElement.current.getStatData(event.value)
+    this.hasCurveFlattenElement.current.getStatData(event.value)
     this.overalPieChartElement.current.getStatData(event.value)
     this.mapElement.current.getMapData(event.value)
     this.setState({ countryFilter: event.value })
@@ -106,7 +107,7 @@ class Dashboard extends React.Component {
         <Row >
           <Col lg={1} />
           <Col lg={6} xs={12}>
-            <OveralMainChart ref={this.overalMainChartElement} />
+            <HasCurveFlatten ref={this.hasCurveFlattenElement} />
           </Col>
           <Col lg={4} xs={12} >
             <CaseCountryPieChart  />
@@ -116,10 +117,16 @@ class Dashboard extends React.Component {
         <Row>
           <Col lg={1} />
           <Col lg={6} xs={12}>
-            <CountryCompareChart selectCountryData={this.state.selectCountryData} />
+            <CaseRollingAvgChart selectCountryData={this.state.selectCountryData} />
           </Col>
           <Col lg={4} xs={12}>
             <PieChart ref={this.overalPieChartElement}  />
+          </Col>
+        </Row>
+        <Row>
+          <Col lg={1} />
+          <Col lg={6} xs={12}>
+            <CountryCompareChart selectCountryData={this.state.selectCountryData} />
           </Col>
         </Row>
 

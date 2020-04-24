@@ -51,6 +51,7 @@ class CaseTypeStat extends React.Component {
       maxPadding: 0
     },
     yAxis: {
+      // type: 'logarithmic',
       visible: false,
       minPadding: 0,
       maxPadding: 0

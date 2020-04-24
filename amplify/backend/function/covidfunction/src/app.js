@@ -5,12 +5,14 @@ var region = process.env.REGION
 
 Amplify Params - DO NOT EDIT */
 
+
 const DBHelper = require('./dbHelper')
 
 var express = require('express')
 var bodyParser = require('body-parser')
 var awsServerlessExpressMiddleware = require('aws-serverless-express/middleware')
 const moment = require('moment')
+const ma = require('moving-averages').ma
 
 const batchHandler = require('./batch')
 
@@ -129,84 +131,99 @@ app.get('/casePoint/totalStat/:country', async (req, res) => {
   res.json(result)
 });
 
+/**********************
+ * Get top 10 infected stats method *
+ **********************/
+app.get('/casePoint/overviewRollingAvgStats', async (req, res) => {
+  let queryTopImpactedCountries = await getListAllCountriesQuery()
+  let topImpactedResult = await DBHelper.executeAggregate(queryTopImpactedCountries)
+  let topImpacted = topImpactedResult.body.slice(0, 10) // choose top most infected regions
+  topImpacted =  topImpacted.map(el => el.country)
+  console.log(topImpacted)
+  
+  let queryListAllCountries = [{
+     '$match': {
+      'countryRegion': {
+        '$in': topImpacted
+      }}
+   },
+    {
+      '$group': {
+        '_id': {
+          '__alias_0': '$date', 
+          'countryRegion': '$countryRegion'
+        }, 
+        '__alias_1': {
+          '$sum': '$confirmed'
+        }, 
+        '__alias_2': {
+          '$sum': '$recovered'
+        }, 
+        '__alias_3': {
+          '$sum': '$active'
+        }, 
+        '__alias_4': {
+          '$sum': '$deaths'
+        }
+      }
+    }, {
+      '$project': {
+        '_id': 0, 
+        '__alias_0': '$_id.__alias_0', 
+        'countryRegion': '$_id.countryRegion', 
+        '__alias_1': 1, 
+        '__alias_2': 1, 
+        '__alias_3': 1, 
+        '__alias_4': 1
+      }
+    }, {
+      '$project': {
+        'countryRegion': '$countryRegion', 
+        'date': '$__alias_0', 
+        'confirmed': '$__alias_1', 
+        'recovered': '$__alias_2', 
+        'active': '$__alias_3', 
+        'deaths': '$__alias_4', 
+        '_id': 0
+      }
+    }, {
+      '$sort': {
+        'date': -1,
+      }
+    }
+  ]
+
+  let result = await DBHelper.executeAggregate(queryListAllCountries)
+
+  let rollingAvgResult = {}
+  topImpacted.forEach(country => {
+    let countryCase = result.body.filter(el => el.countryRegion === country)
+    // update active cases
+    countryCase.forEach(el => { el.active = el.confirmed - el.recovered - el.deaths })
+    countryCase.reverse(); //oldest date first 
+    rollingAvgResult[country] = {}
+    for (let caseType of ['confirmed', 'recovered', 'active', 'deaths']){
+      let deltaCasePerDay = diff(countryCase.map(el => el[caseType]))
+      let movingAvg = ma(deltaCasePerDay, 7)
+      rollingAvgResult[country][caseType] = movingAvg
+    }
+  })
+
+  res.json({
+        statusCode: 200,
+        body: rollingAvgResult
+    })
+})
+
+// get the delta on reported cases
+function diff(A) { return A.slice(1).map(function (n, i) { return n - A[i] }) }
 
 /**********************
  * Get stats method *
  **********************/
 app.get('/casePoint/overviewStats', async (req, res) => {
 
-  var lastDate = await DBHelper.getLatestDay()
-
-  let queryListAllCountries = [{
-    '$match': {
-      '$expr': {
-        '$and': [{
-          '$cond': [{
-            '$not': {
-              '$isArray': [
-                '$date'
-              ]
-            }
-          }, {
-            '$gte': [
-              '$date', {
-                '$dateFromString': {
-                  'dateString': lastDate,
-                  'timezone': 'UTC'
-                }
-              }
-            ]
-          }, {
-            '$reduce': {
-              'input': '$date',
-              'initialValue': false,
-              'in': {
-                '$or': [
-                  '$$value', {
-                    '$gte': [
-                      '$$this', {
-                        '$dateFromString': {
-                          'dateString': lastDate,
-                          'timezone': 'UTC'
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          }]
-        }, true]
-      }
-    }
-  }, {
-    '$group': {
-      '_id': {
-        '__alias_0': '$countryRegion'
-      },
-      'confirmed': {
-        '$sum': '$confirmed'
-      },
-      'recovered': {
-        '$sum': '$recovered'
-      },
-      'deaths': {
-        '$sum': '$deaths'
-      }
-    }
-  }, {
-    '$project': {
-      '_id': 0,
-      'country': '$_id.__alias_0',
-      'confirmed': '$confirmed',
-      'recovered': '$recovered',
-      'deaths': '$deaths'
-    }
-  }, {
-    '$sort': {
-      'confirmed': -1
-    }
-  }]
+  let queryListAllCountries = await getListAllCountriesQuery()
 
   let result = await DBHelper.executeAggregate(queryListAllCountries)
   res.json(result)
@@ -510,3 +527,78 @@ app.listen(3001, function () { // put back 3000
 });
 
 module.exports = app
+
+async function getListAllCountriesQuery() {
+  var lastDate = await DBHelper.getLatestDay()
+  let queryListAllCountries = [{
+    '$match': {
+      '$expr': {
+        '$and': [{
+          '$cond': [{
+            '$not': {
+              '$isArray': [
+                '$date'
+              ]
+            }
+          }, {
+            '$gte': [
+              '$date', {
+                '$dateFromString': {
+                  'dateString': lastDate,
+                  'timezone': 'UTC'
+                }
+              }
+            ]
+          }, {
+            '$reduce': {
+              'input': '$date',
+              'initialValue': false,
+              'in': {
+                '$or': [
+                  '$$value', {
+                    '$gte': [
+                      '$$this', {
+                        '$dateFromString': {
+                          'dateString': lastDate,
+                          'timezone': 'UTC'
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }]
+        }, true]
+      }
+    }
+  }, {
+    '$group': {
+      '_id': {
+        '__alias_0': '$countryRegion'
+      },
+      'confirmed': {
+        '$sum': '$confirmed'
+      },
+      'recovered': {
+        '$sum': '$recovered'
+      },
+      'deaths': {
+        '$sum': '$deaths'
+      }
+    }
+  }, {
+    '$project': {
+      '_id': 0,
+      'country': '$_id.__alias_0',
+      'confirmed': '$confirmed',
+      'recovered': '$recovered',
+      'deaths': '$deaths'
+    }
+  }, {
+    '$sort': {
+      'confirmed': -1
+    }
+  }]
+  return queryListAllCountries
+}

@@ -85,16 +85,14 @@ export default class ForecastChart extends PureComponent {
 
     let { countryForecastFilter, countryForecastData } = this.state
     let forecast = this.filterByModel(countryForecastData.body)
-    forecast = forecast.reverse().slice(0, 30 + 5)
+    forecast = forecast.reverse().slice(0, 20 + 5)
     // console.log('forecastbycountry', forecast)
     let series = []
 
     ///
     const result = await API.get('covidapi', `/casePoint/totalStat/${countryForecastFilter}`);
-
     let caseCountry = result.body.map(el => el[this.state.forecastType])
-
-    caseCountry = caseCountry.slice(0, 30).reverse() // choose top most infected regions
+    caseCountry = caseCountry.slice(0, 20).reverse() // choose top most infected regions
     // console.log(caseCountry)
 
     series.push({
@@ -103,7 +101,7 @@ export default class ForecastChart extends PureComponent {
       type: 'column',
       zIndex: 1,
       marker: {
-        // enabled: false
+        // enabled: false,
         lineWidth: 0.5,
       }
     })
@@ -112,33 +110,14 @@ export default class ForecastChart extends PureComponent {
       name: 'forecast',
       data: forecast.map(el => el.forecastNumber).reverse(),
       marker: {
-        // enabled: false
+        // enabled: false,
         lineWidth: 0.5,
       }
     })
 
-
-    // console.log(forecast.map(el => [el.date, el.y_hat_lower, el.y_hat_upper]).reverse())
-    // series.push({
-    //   name: 'Range',
-    //   data: forecast.map(el => [el.date, el.y_hat_lower, el.y_hat_upper]).reverse(),
-    //   type: 'arearange',
-    //   lineWidth: 0,
-    //   linkedTo: ':previous',
-    //   color: colors.blue,
-    //   fillOpacity: 0.3,
-    //   zIndex: 0,
-    //   marker: {
-    //     enabled: false
-    //   }
-    // })
-
     let categories = forecast.map(el => moment(el.date).utc().format('YYYY-MM-DD')).reverse()
     let subtitleText = 'Next 5 days forecast<br/>last updated at: ' +
       moment(countryForecastData.lastUpdateDate).utc().subtract(1, 'day').format('YYYY-MM-DD') + ' GMT'
-
-    // console.log('categories', categories)
-
 
     let chartData = {
       credits: {
@@ -193,6 +172,7 @@ export default class ForecastChart extends PureComponent {
           text: null
         },
         min: 0,
+        // type: 'logarithmic',
         tickInterval: null,
         gridLineColor: colors.gridLineColor
       },
