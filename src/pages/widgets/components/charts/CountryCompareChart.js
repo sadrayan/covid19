@@ -96,7 +96,7 @@ export default class CountryCompareChart extends PureComponent {
         gridLineColor: colors.gridLineColor
       },
       yAxis: {
-        type: 'logarithmic',
+        // type: 'logarithmic',
         title: {
           text: null
         },

@@ -39,7 +39,7 @@ export default class CaseCountryPieChart extends PureComponent {
       chart: {
         type: 'variablepie',
         backgroundColor: 'transparent',
-        height: 450
+        height: 400
       },
       exporting: {
         enabled: false

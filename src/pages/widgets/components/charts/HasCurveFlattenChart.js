@@ -50,20 +50,20 @@ export default class HasCurveFlatten extends React.PureComponent {
 
     // calculate Active Delta cases
     let deltaCasePerDay = this.diff(data.map(el => el[1]))
-    console.log('delta', deltaCasePerDay)
+    // console.log('delta', deltaCasePerDay)
 
     // shift moving average forward to match the last elements
     let movingAvg = ma(deltaCasePerDay, rollingAvgSpan).flat()
     movingAvg.unshift( Array.from({length: rollingAvgSpan -1 }).map(el => 0) )
     movingAvg = movingAvg.flat()
-    console.log('moving average', movingAvg)
+    // console.log('moving average', movingAvg)
     let trendUp = (deltaCasePerDay[deltaCasePerDay.length - 1] - movingAvg[movingAvg.length - 1]) >= 0
     // console.log('trendUp', trendUp)
 
     const regResult = regression.linear(movingAvg.map((el, index) => { return [index, el] }))
-    const gradient = regResult.equation[0];
-    const yIntercept = regResult.equation[1];
-    console.log(regResult, gradient, yIntercept)   
+    // const gradient = regResult.equation[0];
+    // const yIntercept = regResult.equation[1];
+    // console.log(regResult, gradient, yIntercept)   
     
     
 
@@ -71,7 +71,7 @@ export default class HasCurveFlatten extends React.PureComponent {
     for (let i = 1; i <= 10; i++){
       trend.push(regResult.predict([data.length + i])[1])
     }
-    console.log('trend' , trend)
+    // console.log('trend' , trend)
 
 
 

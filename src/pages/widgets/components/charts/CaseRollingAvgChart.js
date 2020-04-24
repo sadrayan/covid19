@@ -2,11 +2,7 @@ import React from 'react'
 import { Row, Col, FormGroup, Label, Input } from 'reactstrap'
 import Widget from "../../../../components/Widget/Widget"
 import HighchartsReact from 'highcharts-react-official'
-// import statsStyles from './ChartStyles'
 import { API } from 'aws-amplify'
-// import { ma, } from 'moving-averages'
-// const moment = require('moment')
-// import regression from 'regression'
 var nf = new Intl.NumberFormat();
 
 
