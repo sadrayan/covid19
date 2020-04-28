@@ -1,15 +1,13 @@
 import React from 'react'
-import { Row, Col } from "reactstrap"
-import Widget from "../../../../components/Widget/Widget"
-import Highcharts from 'highcharts'
+import { Row, Col } from 'reactstrap'
+import Widget from '../../../../components/Widget/Widget'
 import HighchartsReact from 'highcharts-react-official'
 import statsStyles from './ChartStyles'
 import { API } from 'aws-amplify'
 import { ma, } from 'moving-averages'
 import config from '../config'
 import regression from 'regression'
-import annotations from 'highcharts/modules/annotations'
-annotations(Highcharts)
+
 const moment = require('moment')
 const colors = config.chartColors
 var nf = new Intl.NumberFormat()
@@ -107,8 +105,6 @@ export default class HasCurveFlatten extends React.PureComponent {
       }
     })
 
-    // console.log(moment.utc(data[0][0]))
-
     let chartOptions = {
       credits: {
         enabled: false
@@ -155,24 +151,9 @@ export default class HasCurveFlatten extends React.PureComponent {
           }
         }
       },
-      // annotations: {
-      //   visible: false
-      // },
-      annotations: [{
-        visible: true,
-        labels: [{
-            point: {
-                x: trend.length -5,
-                y: trend[trend.length -5],
-                xAxis: 0,
-                yAxis: 0
-            },
-            text: 'Trend line'
-        }],
-        labelOptions: {
-            x: 40, y: -10
-        }
-      }],
+      annotations: {
+        visible: false
+      },
       plotOptions: {
         series: {
           shadow: false,
