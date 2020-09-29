@@ -126,8 +126,7 @@ class Am4chartMap extends Component {
     let { caseDataPoints } = this.state
     // for performance, only show geo points with 50 or more confirmed cases
     
-    if (countryFilter === 'All') 
-      caseDataPoints = caseDataPoints.filter(el => el.intensity >= 1000)
+    caseDataPoints = caseDataPoints.filter(el => el.intensity >= 5000)
 
     if (countryFilter !== 'All') {
       caseDataPoints = caseDataPoints.filter(el => el.countryRegion === countryFilter)
@@ -136,7 +135,6 @@ class Am4chartMap extends Component {
 
     // remove points that fall outside of map
     if (countryFilter === 'US') {
-      caseDataPoints = caseDataPoints.filter(el => el.intensity >= 1000)
       caseDataPoints = caseDataPoints.filter(el => el.geopoint.coordinates[0] !== 0)
       caseDataPoints = caseDataPoints.filter(el => el.combinedKey.indexOf('Virgin Islands') === -1)
       caseDataPoints = caseDataPoints.filter(el => el.combinedKey.indexOf('Puerto Rico') === -1)
