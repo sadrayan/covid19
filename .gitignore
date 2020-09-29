@@ -22,6 +22,10 @@ yarn-error.log*
 
 .idea
 
+amplify/backend/function/covidfunction/src/variables.env
+
+aws/predictionFunction/upload-to-s3.zip
+
 #amplify
 amplify/\#current-cloud-backend
 amplify/.config/local-*
@@ -34,9 +38,6 @@ node_modules/
 aws-exports.js
 awsconfiguration.json
 amplifyconfiguration.json
+amplify-build-config.json
 amplify-gradle-config.json
-amplifyxc.config
-
-amplify/backend/function/covidfunction/src/variables.env
-
-aws/predictionFunction/upload-to-s3.zip
+amplifytools.xcconfig
