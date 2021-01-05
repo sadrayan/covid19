@@ -67,7 +67,7 @@
     "awesome-bootstrap-checkbox": "1.0.1",
     "aws-amplify": "^2.2.7",
     "aws-amplify-react": "^3.1.8",
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "bootstrap": "^4.4.1",
     "bootstrap_calendar": "https://github.com/xero/bootstrap_calendar.git#1.0.1",
     "classnames": "^2.2.6",
