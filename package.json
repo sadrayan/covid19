@@ -89,7 +89,7 @@
     "minimist": "^1.2.5",
     "moment": "^2.22.2",
     "moving-averages": "^4.0.5",
-    "node-forge": "^0.10.0",
+    "node-forge": "^1.3.0",
     "nvd3": "1.8.6",
     "rc-color-picker": "^1.2.6",
     "rc-hammerjs": "0.6.9",
