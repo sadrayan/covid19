@@ -86,7 +86,7 @@
     "jsonwebtoken": "^8.5.1",
     "line-awesome": "github:icons8/line-awesome",
     "messenger": "git+https://github.com/HubSpot/messenger.git#v1.4.2",
-    "minimist": "^1.2.5",
+    "minimist": "^1.2.6",
     "moment": "^2.22.2",
     "moving-averages": "^4.0.5",
     "node-forge": "^0.10.0",
